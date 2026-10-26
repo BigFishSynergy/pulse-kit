@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   check:
+    if: vars.CRM_CONNECTOR != ''   # needs a data branch, so off until a connector is set up
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

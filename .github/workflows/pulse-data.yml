@@ -31,6 +31,7 @@ concurrency:
 
 jobs:
   build:
+    if: vars.CRM_CONNECTOR != ''   # off in the template repo itself; on once a client picks a connector
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

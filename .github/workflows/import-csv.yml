@@ -21,6 +21,7 @@ concurrency:
 
 jobs:
   convert:
+    if: vars.CRM_CONNECTOR == 'csv'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
