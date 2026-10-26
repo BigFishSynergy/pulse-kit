@@ -33,7 +33,7 @@ Self-serve with the client's own Claude (`.claude/skills/pulse-setup/`): no term
 |---|---|
 | `connectors/` | One per CRM. Each lands the same files on the `data` branch |
 | `docs/` | `SETUP.md` (start to finish), `DATA-CONTRACT.md` (the file shape), the Slack app manifest |
-| `guides/` | Client-facing: the AccuLynx guide, the any-CRM guide, the Rules Worksheet, the Prove It checklist |
+| `guides/` | Client-facing: the Start Here guide (start-here.md), the AccuLynx guide, the any-CRM guide, the Rules Worksheet, the Prove It checklist |
 | `rules/` | The rulebook, settings and math, company-neutral, with FILL_INs |
 | `scripts/` | The rules check, the data contract check, the scrubber, the map file builder |
 | `site/` | The Pulse. `site/pulse.config.json` holds everything company-specific; `site/content/` the client's own content |
