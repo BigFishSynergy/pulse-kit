@@ -14,6 +14,7 @@ import { dfmt } from "@/lib/pulse/format";
 import TipCard from "@/components/pulse/TipCard";
 import { supportLinks, tipFrom } from "@/lib/pulse/support";
 import { pageOn } from "@/lib/pulse/config";
+import { photoIndex } from "@/lib/pulse/photos";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function Pulse({ searchParams }: { searchParams: { week?: s
   const [meta, s, people] = await Promise.all([getMeta(week), getLeadership(week), getPeople(week)]);
   const coaching = meta ? await getCoaching(meta.week_start) : null;
   const repSlugs: Record<string, string> = Object.fromEntries((people?.roster ?? []).map((r: { rep: string; slug: string }) => [r.rep, r.slug]));
+  const photos = await photoIndex();
   const tip = pageOn("tips") ? tipFrom(s?.scoreboard) : null;
   const latest = weeks[0] ? `Latest numbers (${weeks[0].pulled_at.replace(/,.*/, "")})` : "Latest numbers";
   return (
@@ -38,7 +40,7 @@ export default async function Pulse({ searchParams }: { searchParams: { week?: s
       <ArchiveNote week={week} back="/pulse/hq/pulse" />
       {tip && !week && !me.view ? <TipCard tip={tip} week={meta?.week_start ?? ""} {...supportLinks()} /> : null}
       {s && look === "clean" ? (
-        <CleanPulse s={s} coaching={coaching} repSlugs={repSlugs} canAsk={!me.view && !!process.env.ANTHROPIC_API_KEY} week={week ?? ""} first={me.name.split(" ")[0]} />
+        <CleanPulse s={s} coaching={coaching} repSlugs={repSlugs} photos={photos} canAsk={!me.view && !!process.env.ANTHROPIC_API_KEY} week={week ?? ""} first={me.name.split(" ")[0]} />
       ) : s ? (
         <PulseView s={s} coaching={coaching} repSlugs={repSlugs} canAsk={!me.view && !!process.env.ANTHROPIC_API_KEY} week={week ?? ""} first={me.name.split(" ")[0]} />
       ) : (

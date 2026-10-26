@@ -120,7 +120,7 @@ In the client's own Vercel account:
 | `NEXT_PUBLIC_MAPTILER_KEY` | Optional. A satellite map |
 | The message settings for their service | Step 12 |
 
-6. Domains: add their address (for example `pulse.theircompany.com`) and put it in `pulse.config.json` `company.site_url`. Redeploy.
+6. Domains: add their address (for example `pulse.theircompany.com`); Vercel shows one DNS record to add where their domain is registered (GoDaddy, Google, Cloudflare). Their own website, WordPress or anything else, doesn't change; they can add a "Team Pulse" link to it if they like. Put the address in `pulse.config.json` `company.site_url` and redeploy.
 
 ## 11. Logins
 

@@ -1,6 +1,8 @@
 # The Pulse Kit landing page and automatic unlock
 
-For Benny. How someone finds the Pulse Kit, signs up, and gets access on their own, with nobody added by hand.
+For Benny only. How someone finds the Pulse Kit on bennyfisher.com, signs up, and gets access on their own, with nobody added by hand.
+
+Clients never touch Duda or this page's setup. Their Pulse runs on its own in their Vercel account at an address like pulse.theircompany.com, whatever their own website is built on (WordPress, Wix, Squarespace, anything): they add one DNS record where their domain is registered (docs/SETUP.md step 10), and, if they like, a "Team Pulse" link on their website.
 
 ```
 bennyfisher.com/pulse (Duda page + form)

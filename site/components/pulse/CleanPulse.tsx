@@ -82,7 +82,7 @@ function WeekBars({ trend }: { trend: any[] }) {
   );
 }
 
-export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first }: { s: any; coaching: any; repSlugs: Record<string, string>; canAsk: boolean; week: string; first: string }) {
+export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first, photos = {} }: { s: any; coaching: any; repSlugs: Record<string, string>; canAsk: boolean; week: string; first: string; photos?: Record<string, number> }) {
   const [per, setPer] = usePersist("cleanPer", "month", PER.map((p) => p[0]));
   const [q, setQ] = useState("");
   const b = s.board;
@@ -150,7 +150,10 @@ export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first 
             return (
               <Link key={r.rep} href={repSlugs[r.rep] ? q2(r.rep) : "#"} className="cl-rep">
                 <span className={`cl-pow${c?.power > 50 ? " good" : ""}${c?.rank === 1 ? " first" : ""}`}>{c ? <><b className="num">{c.power}</b><small>Power</small></> : coming.has(r.rep) ? <><b>New</b><small>Rookie</small></> : <><b>–</b><small>Power</small></>}</span>
-                <span className="cl-name">{r.rep}{temp[r.rep] ? <MeterBadge level={temp[r.rep].level} sold={temp[r.rep].sold} small /> : null}</span>
+                <span className="cl-name">{photos[repSlugs[r.rep]] ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="cl-face" src={`/pulse/api/photo/${repSlugs[r.rep]}?v=${photos[repSlugs[r.rep]]}`} alt="" />
+                ) : null}{r.rep}{temp[r.rep] ? <MeterBadge level={temp[r.rep].level} sold={temp[r.rep].sold} small /> : null}</span>
                 <span className="cl-stat"><b className="num">{moneyK(r.sales_30)}</b><small>sales</small></span>
                 <span className="cl-stat opt"><b className="num">{n0(r.jobs_sold_30)}</b><small>jobs</small></span>
                 <span className="cl-stat"><b className="num">{r.close_30?.pct != null ? pct(r.close_30.pct, 0) : "–"}</b><small>close</small></span>
