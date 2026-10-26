@@ -86,7 +86,7 @@ In their own Vercel account (Pro, because it's a business site and the hourly no
 
 ### 7. Logins
 
-They open `https://<their site>/pulse` and land on the Welcome page: the setup code from step 6, their name, a password. That makes the admin login. Then the People page (in the menu): add each person, pick their role (a rep sees only their own numbers, a CSR only their own appointments, leadership everything), and send each person their own sign-in link directly. A link or password shows once; New link makes another.
+They open `https://<their site>/pulse` and land on the Welcome page: the setup code from step 6, their name, a password. That makes the admin login. Then the People page (in the menu): add each person, pick their role (a rep sees only their own numbers, a CSR only their own appointments, leadership everything), and send each person their own sign-in link directly. A link or password shows once; New link makes another. If they use Slack or email for messages (step 12), help them put each person's Slack member ID or email on their row, then press **Send their link to everyone who hasn't been on the Pulse yet**: the Pulse sends each person their own link, to them only. You never type, paste or send a sign-in link or password yourself; the admin presses the button.
 
 ### 8. Messages and TVs (optional)
 
@@ -120,5 +120,5 @@ If a request needs something the Pulse doesn't have yet (a new data source like 
 - **A red X in Actions:** open the run, read the last 30 lines, explain it in one sentence, fix it or tell them the one click to make. `docs/SETUP.md` "Day to day" covers the usual ones.
 - **"Data pulled" is old:** check the last pull run. AccuLynx: is the schedule still running, did the key get deleted? CSV: when was the last upload?
 - **A number looks wrong:** never argue with it. Run **prove-it** for the dates, compare with their CRM report, and treat it like step 5.
-- **Someone can't sign in:** People page, New link.
+- **Someone can't sign in:** they tap **Send my link** on the sign-in page (Slack or email only). Otherwise People page, New link.
 - **They want a change to the site** (a page, wording, a color): settings changes you can make in `site/pulse.config.json`; anything bigger, write down what they want in a GitHub issue on their repo.

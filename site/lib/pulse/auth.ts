@@ -15,8 +15,9 @@ import { allUsers } from "./userstore";
 
 export type Role = "rep" | "lead" | "csr";
 // rep: the rep's slug. csr: the CSR's slug (their "Appointment Set By" name in the CRM, lower case).
-export type PulseUser = { u: string; name: string; role: Role; rep?: string; csr?: string; hash: string; key?: string; expires?: string; view?: boolean };
+export type PulseUser = { u: string; name: string; role: Role; rep?: string; csr?: string; hash: string; key?: string; expires?: string; view?: boolean; dm?: string };
 // expires: a guest link (users.mjs guest) stops working at this time, and its sessions end with it.
+// dm: where this person gets their own sign-in link when they ask for it: a Slack member ID, or with email an address.
 const expired = (u: PulseUser) => !!u.expires && Date.parse(u.expires) <= Date.now();
 // view: a view-only login (every guest link). Sees everything leadership sees, changes nothing: no request statuses,
 // no suggestions, no Ask Claude, no graphics, no Slack posts, no Speed Round. The API routes enforce it, not just the buttons.

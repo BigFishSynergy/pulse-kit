@@ -1,6 +1,6 @@
 # Slack app manifest for the company's Pulse app (api.slack.com/apps, Create New App, From a manifest).
-# Change the name. The app only posts: chat:write for channels it is added to, im:write to DM the admin,
-# files:write for graphics. It reads nothing from Slack.
+# Change the name. The app only posts: chat:write for channels it is added to, im:write to DM the admin (and each
+# person their own sign-in link, when they ask for it), files:write for graphics. It reads nothing from Slack.
 display_information:
   name: Company Pulse
   description: Daily numbers and notices from the company's Pulse.

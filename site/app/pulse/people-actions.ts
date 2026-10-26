@@ -6,9 +6,13 @@ import { getSession, homeOf, isAdmin, sealLink, startSession, users, type PulseU
 import { CONFIG } from "@/lib/pulse/config";
 import { keepLinkCopy, linkUrl } from "@/lib/pulse/links";
 import { saveUsers, storedUsers } from "@/lib/pulse/userstore";
+import { lastSeenDays } from "@/lib/pulse/activity";
+import { SEND_MESSAGES, sendable, sendLink, WHY } from "@/lib/pulse/sendlink";
+import { cleanDm, DM_WORD, SERVICE, WAY } from "@/lib/pulse/slack";
 
 // Managing logins from the site, so nobody needs a terminal: the first login on /pulse/setup, then the People page
 // (/pulse/hq/people, the admin only). Passwords and sign-in links are shown once, right here, and stored only as hashes.
+// With Slack or email, Send link sends someone their own link, to them only (lib/pulse/sendlink.ts).
 
 export type PeopleState = { error?: string; done?: string; password?: string; link?: string; who?: string };
 
@@ -73,9 +77,11 @@ export async function addLogin(_: PeopleState, form: FormData): Promise<PeopleSt
   if (!["lead", "rep", "csr"].includes(role)) return { error: "Pick a role." };
   if (role !== "lead" && !SLUG.test(slug)) return { error: role === "rep" ? "Pick which rep's numbers they see." : "Pick which CSR's numbers they see." };
   if ((await users()).some((x) => x.u === u)) return { error: `${u} already has a login. Use New password or New link instead.` };
+  const dm = cleanDm(String(form.get("dm") || ""));
+  if (dm === null) return { error: badDm() };
   const list = await storedUsers();
   const pw = newPassword();
-  const user: PulseUser = { u, name, role, ...(role === "rep" ? { rep: slug } : role === "csr" ? { csr: slug } : {}), hash: hash(pw) };
+  const user: PulseUser = { u, name, role, ...(role === "rep" ? { rep: slug } : role === "csr" ? { csr: slug } : {}), hash: hash(pw), ...(dm ? { dm } : {}) };
   const token = makeLink(user);
   list.push(user);
   await saveUsers(list);
@@ -106,6 +112,52 @@ export async function newLink(_: PeopleState, form: FormData): Promise<PeopleSta
   revalidatePath("/pulse/hq/people");
   await keepLinkCopy(u, sealLink(token));
   return { done: `New sign-in link for ${me.name}. The old link stops working.`, who: u, link: linkUrl(token) };
+}
+
+const badDm = () => SERVICE === "email"
+  ? "That doesn't look like one email address."
+  : "A Slack member ID starts with U and is about 11 letters and numbers. In Slack: open their profile, tap ⋮ (More), Copy member ID.";
+
+/** Where someone gets their own sign-in link: their Slack member ID, or with email their address. Blank clears it. */
+export async function setDm(_: PeopleState, form: FormData): Promise<PeopleState> {
+  try { await requireAdmin(); } catch (e) { return { error: (e as Error).message }; }
+  const u = String(form.get("u") || "");
+  const dm = cleanDm(String(form.get("dm") || ""));
+  if (dm === null) return { error: badDm() };
+  const { list, me } = await editable(u);
+  if (!me) return { error: `No login called ${u}.` };
+  if (dm) me.dm = dm; else delete me.dm;
+  await saveUsers(list);
+  revalidatePath("/pulse/hq/people");
+  return { done: dm ? `Saved. ${me.name} can get their link ${WAY}.` : `Cleared ${me.name}'s ${DM_WORD}.` };
+}
+
+/** Send one person their own sign-in link, to them only. */
+export async function sendOneLink(_: PeopleState, form: FormData): Promise<PeopleState> {
+  try { await requireAdmin(); } catch (e) { return { error: (e as Error).message }; }
+  const u = (await users()).find((x) => x.u === String(form.get("u") || ""));
+  if (!u || !sendable(u)) return { error: "That login can't be sent a link." };
+  const r = await sendLink(u);
+  const msg = SEND_MESSAGES[r](u.name.split(" ")[0]);
+  return r === "sent" ? { done: msg } : { error: msg };
+}
+
+/** Everyone who has never been on the Pulse (the admin aside), each sent their own link. */
+export async function sendNewLinks(_: PeopleState): Promise<PeopleState> {
+  let s;
+  try { s = await requireAdmin(); } catch (e) { return { error: (e as Error).message }; }
+  const seen = await lastSeenDays();
+  const todo = (await users()).filter((u) => sendable(u) && u.u !== s.u && !seen[u.u]);
+  if (!todo.length) return { done: "Everyone has been on the Pulse at least once. Nobody to send to." };
+  const sent: string[] = [], not: string[] = [];
+  for (const u of todo) {
+    const r = await sendLink(u);
+    const first = u.name.split(" ")[0];
+    if (r === "sent") sent.push(first);
+    else not.push(`${first} (${WHY[r]})`);
+  }
+  const msg = [sent.length ? `Sent to ${sent.join(", ")}.` : "", not.length ? `Not sent: ${not.join("; ")}.` : ""].filter(Boolean).join(" ");
+  return sent.length ? { done: msg } : { error: msg };
 }
 
 export async function removeLogin(_: PeopleState, form: FormData): Promise<PeopleState> {
