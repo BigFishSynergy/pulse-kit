@@ -2,9 +2,9 @@
 
 Everything a contractor needs to get their own Pulse: their CRM's numbers pulled in automatically, their own rules (so Claude answers any number exactly the way the CRM does, to the record and the penny), and their own Pulse site with rep and owner screens, a leadership scorecard, a map, POWER rankings, a weekly Speed Round, Make a graphic, Ask Claude, requests, office TV screens, and daily messages through Slack, Google Chat, Teams or email. It all runs in the client's own GitHub and Vercel accounts, and the client owns it.
 
-Self-serve with the client's own Claude (`setup-skill/`): no terminal, the rules drafted from their own CRM data, the numbers matched with one button. Benny Fisher (Visionary Navigator, bennyfisher.com) can lead it with them for a client who wants it done with them.
+Self-serve with the client's own Claude (`.claude/skills/pulse-setup/`): no terminal, the rules drafted from their own CRM data, the numbers matched with one button. Benny Fisher (Visionary Navigator, bennyfisher.com) can lead it with them for a client who wants it done with them.
 
-**Setting one up?** Add `setup-skill/SKILL.md` to the client's Claude and say "Help me set up my Pulse." The same steps are written out in `docs/SETUP.md`.
+**Setting one up?** Open the client's copy in Claude Code and say "Help me set up my Pulse." (The setup skill is built in: `.claude/skills/pulse-setup/`.) The same steps are written out in `docs/SETUP.md`.
 
 ## How it fits together
 
@@ -38,7 +38,7 @@ Self-serve with the client's own Claude (`setup-skill/`): no terminal, the rules
 | `scripts/` | The rules check, the data contract check, the scrubber, the map file builder |
 | `site/` | The Pulse. `site/pulse.config.json` holds everything company-specific; `site/content/` the client's own content |
 | `sample/` | A made-up company to prove the kit end to end, with screenshots |
-| `setup-skill/` | The Claude skill that walks a client through setup and helps when they're stuck |
+| `.claude/skills/pulse-setup/` | The Claude skill that walks a client through setup, builds what they ask for, and helps when they're stuck (Claude Code loads it on its own) |
 | `skill-template/` | The Claude skill that answers number questions from the rules and data |
 | `.github/workflows/` | pull-acculynx, import-csv, check-rules, pulse-data, and the setup buttons: acculynx-list-schedules, start-rules, prove-it, make-map |
 

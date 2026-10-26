@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-// "Suggest an improvement": anyone signed in can ask for a new report, flag something that looks off,
+// "Ask for anything": anyone signed in can ask for a new report, flag something that looks off,
 // or ask for a change to the look. Leadership sees every request on the Requests page.
 
 const KINDS = ["New report or view", "Something looks off", "Look and feel", "Other"];
@@ -35,15 +35,15 @@ export default function SuggestBox() {
   if (!open) {
     return (
       <div className="suggest-cta">
-        <button type="button" className="btn" onClick={() => { setOpen(true); setMsg(""); }}>Suggest an improvement</button>
-        <span className="sub">A report you wish you had, something that looks off, or a change you&apos;d like. Every request gets read.</span>
+        <button type="button" className="btn" onClick={() => { setOpen(true); setMsg(""); }}>Ask for anything</button>
+        <span className="sub">If you can say it, the Pulse can probably do it: a new report, a TV slide, a different look, a number that looks off. Say it in plain words. Every request gets read.</span>
       </div>
     );
   }
   return (
     <form className="suggest" onSubmit={send}>
       <div className="sechead">
-        <h2>Suggest an improvement <small>What would make this site more useful for you?</small></h2>
+        <h2>Ask for anything <small>Describe what you want in plain words. No idea is too small or too big; leadership&apos;s Claude can build most of them right into your Pulse.</small></h2>
         <button type="button" className="link" onClick={() => setOpen(false)}>Close</button>
       </div>
       <div className="checks" role="radiogroup" aria-label="Type of request">
@@ -54,7 +54,7 @@ export default function SuggestBox() {
         ))}
       </div>
       <textarea rows={3} maxLength={2000} value={text} onChange={(e) => setText(e.target.value)} aria-label="Your request"
-        placeholder="Example: show my close rate by day of the week, or let me compare two reps side by side" />
+        placeholder="Example: show my close rate by day of the week, put the top 3 reps on the sales floor TV, or text me when a big job signs" />
       <div className="btns">
         <button type="submit" className="btn primary" disabled={busy || text.trim().length < 3}>{busy ? "Sending" : "Send"}</button>
       </div>

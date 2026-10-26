@@ -35,14 +35,17 @@ export function SameDayMeter({ sd, base, power }: { sd: any; base?: number; powe
   );
 }
 
-function Card({ c, href, me }: { c: any; href?: string; me?: boolean }) {
+function Card({ c, href, me, photo }: { c: any; href?: string; me?: boolean; photo?: number }) {
   const s = c.stats;
   const name = href ? <Link href={href}>{c.rep}</Link> : c.rep;
   return (
     <article className={`pcard ${me ? "me" : ""} ${c.rank === 1 ? "first" : ""}`}>
       <header>
         <span className="rank num">#{c.rank}</span>
-        <h3>{name}</h3>
+        <h3>{photo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="pface" src={`/pulse/api/photo/${c.slug}?v=${photo}`} alt="" />
+        ) : null}{name}</h3>
         <div className="power"><span className="num">{c.power}</span><span className="label">Power</span></div>
       </header>
       <div className="ups">
@@ -174,7 +177,7 @@ function RapidBoard({ b, href, slugs }: { b: any; href: (slug: string) => string
 }
 
 /** Leadership: every rep's card, best power first, who is still earning one, and the record book. */
-export default function PlayerCards({ cards, week }: { cards: any; week?: string }) {
+export default function PlayerCards({ cards, week, photos = {} }: { cards: any; week?: string; photos?: Record<string, number> }) {
   const W = cards?.windows?.["90"];
   if (!W) return null;
   const href = (slug: string) => `/pulse/hq/rep/${slug}${week ? `?week=${week}` : ""}`;
@@ -185,7 +188,7 @@ export default function PlayerCards({ cards, week }: { cards: any; week?: string
       </div>
       <div className="wins"><Win>last 90 days</Win></div>
       <div className="pcards">
-        {W.cards.map((c: any) => <Card key={c.rep} c={c} href={href(c.slug)} />)}
+        {W.cards.map((c: any) => <Card key={c.rep} c={c} href={href(c.slug)} photo={photos[c.slug]} />)}
       </div>
       {W.coming?.length ? (
         <div className="unlocks">

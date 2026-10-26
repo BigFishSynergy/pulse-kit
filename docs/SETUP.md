@@ -6,7 +6,7 @@ Nobody needs a terminal, and nobody needs to be technical. The client's own Clau
 
 ## The easiest way: let Claude walk you through it
 
-Add the skill in `setup-skill/SKILL.md` to the client's own Claude (Customize, Skills, upload it; or put the folder in `.claude/skills/` of their repo for Claude Code), then say:
+The setup skill is built into the kit (`.claude/skills/pulse-setup/SKILL.md`), so Claude Code (the Code tab in the Claude desktop app) loads it on its own in their copy. Open the copy there and say (in a plain Claude chat, add that file under Customize, Skills first):
 
 > Help me set up my Pulse.
 
@@ -164,6 +164,8 @@ Fill in `skill-template/SKILL.md` (repo owner and name, company name) and add it
 - [ ] The client knows: rules change only on github.com, by the owner; a red X in Actions emails them; the last good numbers stay up if a pull fails
 
 ## Day to day
+
+- **Ask for anything.** Anyone can tap Ask for anything at the bottom of a page. The owner hands requests to their Claude (with the setup skill), which builds them into their own copy.
 
 - Data refreshes itself. To pull right away: Actions, the connector's workflow, Run workflow.
 - A failed pull keeps the last good files and emails the repo owner. A failed build keeps the last good numbers on the site, and if new rules broke it, the build runs on the last rules that worked and DMs the admin.

@@ -10,6 +10,7 @@ import { PageHelp } from "@/components/pulse/SecHelp";
 import Footer from "@/components/pulse/Footer";
 import { leadNav } from "@/components/pulse/nav";
 import { requirePage } from "@/lib/pulse/pages";
+import { photoIndex } from "@/lib/pulse/photos";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export default async function TeamPage({ searchParams }: { searchParams: { week?
           <Team c={coaching} repSlugs={repSlugs} week={week ?? ""} dataAt={s.generated_at} />
           <CloseAndReps s={s} repSlugs={repSlugs} week={week ?? ""} />
           <HotColdBoard meter={s.meter} week={week} />
-          <PlayerCards cards={s.cards} week={week} />
+          <PlayerCards cards={s.cards} week={week} photos={await photoIndex()} />
           <div className="clean"><CsrTeam cc={s.csr_cards} /></div>
         </div>
       ) : <div className="state"><h2>No numbers yet</h2><p className="sub">The hourly data job has not written a snapshot yet.</p></div>}

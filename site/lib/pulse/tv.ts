@@ -6,6 +6,7 @@ import { get, put } from "@vercel/blob";
 import { getFacts, getLeadership, getMeta } from "./data";
 import { aggregate, zero, type Facts } from "./ledger";
 import { dfmt } from "./format";
+import { photoIndex } from "./photos";
 
 // TV screens: a page for a TV in the office that cycles through a few big slides and refreshes itself. The admin sets
 // each one up on the TV screens page (/pulse/hq/tv) by answering a few questions: where it hangs, who watches it, which
@@ -84,7 +85,14 @@ export async function slideData(s: Screen) {
     } else if (key === "power") {
       const W = Object.values(L.cards?.windows ?? {})[0] as any;
       const month = aggregate(F, m0, asOf, { teamOnly: true }, "rep");
-      out.push({ key, title: "POWER rankings", rows: (W?.cards ?? []).slice(0, 10).map((c: any) => ({ name: c.rep, power: c.power, sales: month.get(c.rep)?.get("All")?.sales ?? 0 })) });
+      const ph = await photoIndex();
+      const cards = (W?.cards ?? []).slice(0, 12).map((c: any) => ({
+        name: c.rep, slug: c.slug, photo: ph[c.slug] ?? null, rank: c.rank, power: c.power, ups: c.power_ups ?? [],
+        skills: ["money", "closer", "ticket", "hustle", "rapid", "selfgen"].filter((k) => c.skills?.[k]).map((k) => ({ label: c.skills[k].label, rating: c.skills[k].rating })),
+        sales: month.get(c.rep)?.get("All")?.sales ?? 0 }));
+      // four cards to a slide, so every card reads from across the room
+      for (let i = 0; i < cards.length; i += 4)
+        out.push({ key: i ? `${key}-${i}` : key, title: "POWER rankings", sub: cards.length > 4 ? `${i + 1} to ${Math.min(i + 4, cards.length)} of ${cards.length}, last 90 days` : "Last 90 days", cards: cards.slice(i, i + 4) });
     } else if (key === "hotcold") {
       const M = L.meter;
       const lab = Object.fromEntries((M?.levels ?? []).map((l: any) => [l.key, l.label]));

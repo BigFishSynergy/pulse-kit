@@ -1291,3 +1291,33 @@ html:has(.rr .tv.dark), body:has(.rr .tv.dark) { background: #0B0B0B; }
 .rr .tipcard p { margin: 6px 0 0; color: var(--body); }
 .rr .kitline { opacity: .85; }
 .rr .kitline a { color: inherit; }
+.rr .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.rr .photo-cell { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--card); padding: 12px; text-align: center; }
+.rr .photo-cell img, .rr .photo-none { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; }
+.rr .photo-none { display: grid; place-items: center; background: var(--panel); border: 1px solid var(--line-strong); font: 900 32px var(--display); color: var(--muted); }
+.rr .photo-cell label.btn { cursor: pointer; }
+/* TV POWER cards */
+.rr .tv-cards { display: grid; gap: 1.4vw; width: 100%; grid-template-columns: repeat(4, 1fr); }
+.rr .tv-cards.n1, .rr .tv-cards.n2, .rr .tv-cards.n3 { grid-template-columns: repeat(3, minmax(0, 26vw)); justify-content: center; }
+.rr .tv-card { background: var(--card); border: 1px solid var(--line); border-top: 0.8vh solid var(--line); padding: 2.4vh 1.4vw; display: flex; flex-direction: column; gap: 1.6vh; min-width: 0; }
+.rr .tv-card.first { border-top-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.rr .tv-card-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.8vw; }
+.rr .tv-card-rank { font: 900 5vh var(--display); color: var(--muted); }
+.rr .tv-card.first .tv-card-rank { color: var(--good); }
+.rr .tv-face { width: 15vh; height: 15vh; border-radius: 50%; object-fit: cover; justify-self: center; border: 3px solid var(--line); }
+.rr .tv-face.none { display: grid; place-items: center; background: var(--bg); font: 900 4vh var(--display); color: var(--muted); }
+.rr .tv-card-power { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.rr .tv-card-power span { font: 900 12vh var(--display); color: var(--fg); }
+.rr .tv-card.first .tv-card-power span { color: var(--yellow); }
+.rr .tv-card-power small { font: 800 1.6vh var(--display); letter-spacing: .1em; color: var(--muted); }
+.rr .tv-card-name { font: 900 4.4vh var(--display); text-transform: uppercase; color: var(--fg); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rr .tv-skills { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.1vh; }
+.rr .tv-skills li { display: grid; grid-template-columns: 8.5vw 1fr 3vw; align-items: center; gap: 0.6vw; font: 600 2.3vh var(--text); color: var(--muted); }
+.rr .tv-skills i { position: relative; height: 1.5vh; background: var(--line); }
+.rr .tv-skills b { position: absolute; inset: 0 auto 0 0; background: var(--fg); }
+.rr .tv-skills em { position: absolute; top: -0.4vh; bottom: -0.4vh; width: 2px; background: var(--red); }
+.rr .tv-skills li.hot { color: var(--good); } .rr .tv-skills li.hot b { background: var(--good); }
+.rr .tv-skills strong { font: 900 3vh var(--display); color: var(--fg); text-align: right; }
+.rr .tv-card-foot { margin: 0; font: 600 2.2vh var(--text); color: var(--muted); }
+.rr .pcard header h3 { display: flex; align-items: center; gap: 10px; }
+.rr .pcard .pface { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid var(--line-strong); }

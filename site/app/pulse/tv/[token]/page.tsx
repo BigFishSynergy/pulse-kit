@@ -11,5 +11,5 @@ export default async function Tv({ params }: { params: { token: string } }) {
   const s = await screenFor(params.token);
   if (!s) notFound();
   const { meta, slides } = await slideData(s);
-  return <TvShow name={s.name} seconds={s.seconds} dark={s.dark} meta={meta} slides={slides} />;
+  return <TvShow name={s.name} seconds={s.seconds} dark={s.dark} meta={meta} slides={slides} tv={params.token} />;
 }

@@ -2,7 +2,8 @@ node_modules/
 .next/
 .env*.local
 .vercel/
-.claude/
+.claude/*
+!.claude/skills/
 site/pipeline/.cache/
 site/pipeline/node_modules/
 __pycache__/

@@ -14,7 +14,7 @@ Everyone:
 - "What can I do with this page?" at the top of a page opens a short card for each section on it: what it shows, why it matters, how to use it.
 - Numbers refresh every hour from ${CRM}, counted with ${CO.name}'s own rules (the rules repo). "Data pulled" at the top says when. Over a day old, the page says so.
 - The Pulse uses ${CO.name}'s colors: a header band with the page title and a chip showing when the ${CRM} data was pulled, a bar with the pages, and white cards on a light gray page. Dark mode and Log out are in the small menu at the top right.
-- Suggest an improvement (bottom of every page): ask for a report, flag something that looks off, or suggest a change. Every request posts to the company's Pulse Slack channel in the person's own words and shows on the Requests page, where leaders see it and any reply.
+- Ask for anything (bottom of every page): if you can say it, the Pulse can probably do it. Ask for a report, a TV slide, a change, flag something that looks off, or suggest a change. Every request posts to the company's Pulse Slack channel in the person's own words and shows on the Requests page, where leaders see it and any reply.
 - Ask Claude saves every chat. Old chats are in the list on the Ask page; tap one to pick up where you left off. New chat starts fresh.
 - Personal sign-in links remember you for a year on that device. Do not share yours.`;
 
@@ -36,7 +36,9 @@ export const LEAD_GUIDE = `APP GUIDE (leadership side). Pages and what they do:
 - ${REGIONS.join(" vs ")}, on the [Map](/pulse/hq/map#counties) page under the map: the regions side by side, the best one on each line marked green.
 - [Speed Round](/pulse/hq/game): the weekly game. Ten questions, one game a week, leaderboard resets Monday. 15 seconds a question, on what ${CO.name} chose for it (content/speed-round.md: core values, the sales process, products). All from memory, nothing to look up. 100 points a right answer plus up to 50 for speed. The clock starts when each question shows, never while reading an answer.
 - [Job costing](/pulse/hq/costs) and GP, its own page: from the Job Expenses report (Closed jobs, last 365 days, by the date each job went Closed; upgrades included, Call Backs left out). GP % against the GP goal, profit, call back cost, where each dollar of job value went (material, labor, commission, dump, CC fees and more), GP by closed month (each bar shows its GP %), GP by rep, work type or trade, crews (labor, dump and GP on their jobs), material and dump vendors, discounts (over the max in the rules, the rep's share of the overage) and cost flags. Quarter, year, 90 days or 12 months.
-- [Requests](/pulse/hq/requests): every Suggest an improvement, with a status (new, planned, done, not now) and any reply under it. Any leader can reply.
+- [Requests](/pulse/hq/requests): every Ask for anything request, with a status (new, planned, done, not now) and any reply under it. Any leader can reply.
+- [People](/pulse/hq/people) (the admin only): add someone (pick their role and whose numbers they see), make a new sign-in link or password, remove a login, and add team photos for the POWER cards.
+- [TV screens](/pulse/hq/tv) (the admin only): Set up a TV answers four questions (where it hangs, who walks past it, which slides, how long each stays up) and makes a link just for that TV. Open it on the TV's browser and go full screen.
 - [Activity](/pulse/hq/activity): who signed in, pages, active minutes, Claude questions and graphics; this week, last week, last 30 days.
 - [Ask Claude](/pulse/hq/ask): this page. Pick "Numbers for" the whole company or one rep.
 ${COMMON}`;

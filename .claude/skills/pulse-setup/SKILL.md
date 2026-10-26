@@ -100,6 +100,18 @@ If they'd like help beyond setup (their brand, their sales process, how the busi
 
 Run down the go-live list at the end of `docs/SETUP.md` with them, then tell them, warmly, that they're live, and the three things to remember: rules change only on github.com; a red X in Actions emails them and the last good numbers stay up; and they can open this chat (or a new one with this skill) any time they're stuck.
 
+## After go-live: build what they ask for
+
+Tell them, once they're live: if they can say it, their Pulse can probably do it. Anyone on the team can tap **Ask for anything** at the bottom of any page; requests land on the **Requests** page (and in their messages). When the owner brings you one (or asks you directly), build it in their own copy:
+
+1. Say back what you'll build in one or two sentences, and what it will look like. Ask only what you need.
+2. Make the smallest change that does it: a setting in `site/pulse.config.json`, a rule in `rules/`, a new TV slide in `site/lib/pulse/tv.ts`, a page or section in `site/app/pulse/` and `site/components/pulse/`. Follow the code around it.
+3. Keep every promise in the Never list: no customer names, reps see only their own numbers, numbers only from the rules code.
+4. Check it the way the kit does (the rules check, `npx tsc --noEmit` and `npx next build` in `site/`, the sample run when numbers change), push it, and tell them where to see it once Vercel redeploys.
+5. Mark the request done on the Requests page.
+
+If a request needs something the Pulse doesn't have yet (a new data source like QuickBooks, text messages), say plainly what it would take, and offer to set it up together.
+
 ## When they're stuck
 
 - **A red X in Actions:** open the run, read the last 30 lines, explain it in one sentence, fix it or tell them the one click to make. `docs/SETUP.md` "Day to day" covers the usual ones.

@@ -125,3 +125,26 @@ export async function goHome() {
   const s = await getSession();
   redirect(s ? homeOf(s.role) : "/pulse");
 }
+
+/** A team photo for the POWER cards: a small JPEG the browser already made (data URL), up to about 300 KB. */
+export async function uploadPhoto(slug: string, dataUrl: string): Promise<PeopleState> {
+  try { await requireAdmin(); } catch (e) { return { error: (e as Error).message }; }
+  const { SLUG, savePhoto } = await import("@/lib/pulse/photos");
+  if (!SLUG.test(slug)) return { error: "Pick a person first." };
+  const m = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl);
+  if (!m) return { error: "That photo could not be read. Try a JPG or PNG." };
+  const buf = Buffer.from(m[1], "base64");
+  if (buf.length > 400_000) return { error: "That photo is too big. Try a smaller one." };
+  await savePhoto(slug, buf);
+  revalidatePath("/pulse/hq/people");
+  return { done: "Photo saved." };
+}
+
+export async function deletePhoto(slug: string): Promise<PeopleState> {
+  try { await requireAdmin(); } catch (e) { return { error: (e as Error).message }; }
+  const { SLUG, removePhoto } = await import("@/lib/pulse/photos");
+  if (!SLUG.test(slug)) return { error: "No such person." };
+  await removePhoto(slug);
+  revalidatePath("/pulse/hq/people");
+  return { done: "Photo removed." };
+}
