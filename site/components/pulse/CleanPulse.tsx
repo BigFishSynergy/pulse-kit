@@ -7,6 +7,7 @@ import CsrTeam from "./CsrTeam";
 import { MeterBadge } from "./HotCold";
 import { GoalChip, Seg, usePersist, Win } from "./ui";
 import { dfmt, goalClass, goalSay, money, moneyK, n0, n1, paceClass, pct, tidy, written } from "@/lib/pulse/format";
+import PowerBoard from "./PowerBoard";
 
 // The Clean look for leadership: the four numbers that matter, one trend, the team on one screen, and two ways to ask
 // for anything else (a report or Claude). Same snapshot as the Everything look; nothing here is counted differently.
@@ -143,25 +144,9 @@ export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first,
       </section>
 
       <section className="cl-panel">
-        <div className="cl-panel-h"><span className="cl-k">Power rankings</span><Win>last 30 days</Win><span className="sub">Highest POWER first. POWER covers the last 90 days. The hot and cold meter is out of each rep&apos;s last 10 demos. Tap a name for that rep&apos;s screen.</span></div>
-        <div className="cl-team">
-          {team.map((r: any) => {
-            const c = power[r.rep], sp = speed[r.rep];
-            return (
-              <Link key={r.rep} href={repSlugs[r.rep] ? q2(r.rep) : "#"} className="cl-rep">
-                <span className={`cl-pow${c?.power > 50 ? " good" : ""}${c?.rank === 1 ? " first" : ""}`}>{c ? <><b className="num">{c.power}</b><small>Power</small></> : coming.has(r.rep) ? <><b>New</b><small>Rookie</small></> : <><b>–</b><small>Power</small></>}</span>
-                <span className="cl-name">{photos[repSlugs[r.rep]] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className="cl-face" src={`/pulse/api/photo/${repSlugs[r.rep]}?v=${photos[repSlugs[r.rep]]}`} alt="" />
-                ) : null}{r.rep}{temp[r.rep] ? <MeterBadge level={temp[r.rep].level} sold={temp[r.rep].sold} small /> : null}</span>
-                <span className="cl-stat"><b className="num">{moneyK(r.sales_30)}</b><small>sales</small></span>
-                <span className="cl-stat opt"><b className="num">{n0(r.jobs_sold_30)}</b><small>jobs</small></span>
-                <span className="cl-stat"><b className="num">{r.close_30?.pct != null ? pct(r.close_30.pct, 0) : "–"}</b><small>close</small></span>
-                <span className="cl-stat opt"><b className="num">{sp ? `${n1(sp.average)}d` : "–"}</b><small>to close</small></span>
-              </Link>
-            );
-          })}
-        </div>
+        <div className="cl-panel-h"><span className="cl-k">Power rankings</span><Win>last 90 days</Win><span className="sub">Highest POWER first. POWER covers the last 90 days and is built from the six skills on each card (the tick on each bar is the team average). The line at the bottom is the last 30 days. Tap a card for that rep&apos;s screen.</span></div>
+        <PowerBoard team={team} power={power} temp={temp} coming={coming} href={(rep) => (repSlugs[rep] ? q2(rep) : "#")}
+          photo={(rep) => (photos[repSlugs[rep]] ? `/pulse/api/photo/${repSlugs[rep]}?v=${photos[repSlugs[rep]]}` : null)} />
       </section>
 
       <CsrTeam cc={s.csr_cards} />

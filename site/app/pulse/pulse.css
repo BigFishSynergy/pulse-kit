@@ -1323,3 +1323,41 @@ html:has(.rr .tv.dark), body:has(.rr .tv.dark) { background: #0B0B0B; }
 .rr .pcard .pface { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid var(--line-strong); }
 .rr .cl-name:has(.cl-face) { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .rr .cl-name .cl-face { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid var(--line-strong); }
+
+/* POWER rankings as cards (the Pulse page): a podium of three, then fourth to ninth */
+.rr .pb { display: flex; flex-direction: column; gap: 14px; }
+.rr .pb-podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: end; }
+.rr .pb-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.rr .pb-card { display: flex; flex-direction: column; gap: 10px; background: var(--card); border: 1px solid var(--line-strong); border-top: 5px solid var(--line-strong); padding: 14px 16px; text-decoration: none; color: inherit; min-width: 0; }
+.rr .pb-card:hover { border-color: var(--fg); }
+.rr .pb-card.p1 { border-top-color: #D4A017; box-shadow: 0 0 0 2px #D4A017 inset; padding-top: 22px; }
+.rr .pb-card.p2 { border-top-color: #A8A9AD; }
+.rr .pb-card.p3 { border-top-color: #B87333; }
+.rr .pb-head { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; }
+.rr .pb-place { font: 900 26px/1 var(--display); color: var(--muted); }
+.rr .pb-card.top .pb-place { font-size: 40px; }
+.rr .pb-card.p1 .pb-place { color: #D4A017; } .rr .pb-card.p2 .pb-place { color: #8E9095; } .rr .pb-card.p3 .pb-place { color: #B87333; }
+.rr .pb-face { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; justify-self: center; border: 3px solid var(--line-strong); }
+.rr .pb-face.big { width: 96px; height: 96px; }
+.rr .pb-card.p1 .pb-face { border-color: #D4A017; }
+.rr .pb-face.none { display: grid; place-items: center; background: var(--panel); font: 900 22px var(--display); color: var(--muted); }
+.rr .pb-face.none.big { font-size: 34px; }
+.rr .pb-power { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.rr .pb-power b { font: 900 44px/1 var(--display); color: var(--fg); }
+.rr .pb-card.top .pb-power b { font-size: 68px; }
+.rr .pb-card.p1 .pb-power b { color: #D4A017; }
+.rr .pb-power small { font: 800 12px var(--display); letter-spacing: .1em; color: var(--muted); }
+.rr .pb-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font: 900 20px var(--display); text-transform: uppercase; color: var(--fg); }
+.rr .pb-card.top .pb-name { font-size: 26px; }
+.rr .pb-skills { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.rr .pb-skills li { display: grid; grid-template-columns: 96px 1fr 28px; align-items: center; gap: 8px; font: 600 13px var(--text); color: var(--muted); }
+.rr .pb-skills i { position: relative; height: 7px; background: var(--line); }
+.rr .pb-skills b { position: absolute; inset: 0 auto 0 0; background: var(--fg); }
+.rr .pb-skills em { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--red); }
+.rr .pb-skills li.hot { color: var(--good); } .rr .pb-skills li.hot b { background: var(--good); }
+.rr .pb-skills strong { font: 800 15px var(--display); text-align: right; color: var(--fg); }
+.rr .pb-foot { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 8px; font: 600 13px var(--text); color: var(--muted); }
+.rr .pb-foot b { font: 800 16px var(--display); color: var(--fg); }
+.rr .pb-more { margin: 0; }
+@media (max-width: 860px) { .rr .pb-podium, .rr .pb-grid { grid-template-columns: 1fr; } }
+@media (min-width: 861px) and (max-width: 1100px) { .rr .pb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
