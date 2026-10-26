@@ -1,0 +1,446 @@
+"""Company metrics from the CRM export. Reproduces the CRM's certified reports exactly.
+
+Reads the files in docs/DATA-CONTRACT.md (every connector produces the same shape), so this code never changes per CRM.
+All lists (roster, dead reasons, work types...) come from settings.json next to this file, or from the file named in the
+PULSE_SETTINGS environment variable.
+Usage:
+    import sys; sys.path.insert(0, "metrics-rules/rules")
+    import pulse_metrics as rr
+    df = rr.load("metrics-data/data/job_export_raw_latest.csv")
+    rr.metrics(df, "2026-07-01", "2026-09-30")
+"""
+import json
+import os
+from pathlib import Path
+
+import pandas as pd
+
+S = json.loads(Path(os.environ.get("PULSE_SETTINGS") or Path(__file__).parent / "settings.json").read_text())
+SALES_TEAM = [k for k in S["sales_team"] if not k.startswith("_")]
+HIDDEN = set(S["hidden_former_reps"]["names"])
+DR, WT, MS = S["dead_reasons"], S["work_types"], S["milestones"]
+UPG = WT["upgrade"]
+PREFIX = S["job_number_prefix"]["value"]   # job number prefix, set in settings.json
+TZ = S["timezone"]["value"]               # local time zone, set in settings.json
+
+
+def _repaired_csv(path):
+    """Some CRMs (AccuLynx among them) do not quote notes that contain line breaks or commas, so one record can spill over
+    several lines. Glue those pieces back into one record (extra pieces go back into the notes field)."""
+    import csv, io
+    rows = list(csv.reader(open(path, newline="", encoding="utf-8-sig")))
+    hdr, n = rows[0], len(rows[0])
+    k = next((i for i, c in enumerate(hdr) if "note" in c.lower()), n - 1)  # the free-text column
+    tail = n - 1 - k  # columns after the notes column
+    out, cur = [], None
+    for row in rows[1:]:
+        if cur is None:
+            cur = row
+        else:
+            cur[-1] = cur[-1] + "\n" + (row[0] if row else "")
+            cur.extend(row[1:])
+        if len(cur) >= n:
+            if len(cur) > n:  # commas inside the notes split it into extra fields
+                cur = cur[:k] + [",".join(cur[k:len(cur) - tail])] + cur[len(cur) - tail:]
+            out.append(cur)
+            cur = None
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(hdr)
+    w.writerows(out)
+    buf.seek(0)
+    return buf
+
+
+def load(path):
+    df = pd.read_csv(_repaired_csv(path), low_memory=False)
+    for c in [c for c in df.columns if c.endswith("Date") and "Days" not in c]:
+        df[c] = pd.to_datetime(df[c].astype(str).str.split(" ").str[0], format="%m/%d/%y", errors="coerce")
+    df["_dead"] = df["Dead Lead Reason"].fillna("")  # exact-name matching only
+    df["_wt"] = df["Work Type"].fillna("")
+    df["_cb"] = df["Job Trade Type"].fillna("").str.contains(S["call_back_text"])
+    return df
+
+
+def window(df, col, start, end):
+    return (df[col] >= pd.Timestamp(start)) & (df[col] <= pd.Timestamp(end))
+
+
+def rolling(today, days):
+    t = pd.Timestamp(today).normalize()
+    return t - pd.Timedelta(days=days), t  # both days included (rolling 90 on Oct 7 = Jul 9 to Oct 7)
+
+
+def last_week(today):
+    t = pd.Timestamp(today).normalize()
+    monday = t - pd.Timedelta(days=t.weekday())
+    return monday - pd.Timedelta(days=7), monday - pd.Timedelta(days=1)  # previous Monday to Sunday
+
+
+def masks(df, start, end, reps=None):
+    """Boolean masks for every metric. Group any of them by rep or source for breakdowns."""
+    d, wt, cb = df["_dead"], df["_wt"], df["_cb"]
+    m = {}
+    m["contacts"] = window(df, "Lead Milestone Date", start, end) & ~cb & ~wt.isin(WT["contacts_leads_appointments_exclude"]) & ~d.isin(DR["contacts_exclude"])
+    m["leads"] = window(df, "Lead Milestone Date", start, end) & ~cb & ~wt.isin(WT["contacts_leads_appointments_exclude"]) & ~d.isin(DR["leads_and_appointments_exclude"])
+    m["appointments"] = window(df, "Prospect Milestone Date", start, end) & ~cb & ~wt.isin(WT["contacts_leads_appointments_exclude"]) & ~d.isin(DR["leads_and_appointments_exclude"])
+    m["sits"] = window(df, "Initial Appointment Date", start, end) & (df["Primary Estimate Total"] > 0) & ~d.isin(DR["sits_exclude"])
+    m["sales"] = window(df, "Approved Milestone Date", start, end) & df["Current Milestone"].isin(MS["sales_count_if_currently"]) & ~cb
+    m["jobs_sold"] = m["sales"] & (wt != UPG)
+    m["revenue"] = window(df, "Completed Milestone Date", start, end) & df["Current Milestone"].isin(MS["revenue_count_if_currently"]) & ~cb
+    m["jobs_installed"] = m["revenue"] & (wt != UPG)
+    m["upgrades"] = m["revenue"] & (wt == UPG)
+    # A demo: a quoted appointment that passes every close rate exclusion (any date).
+    demo = (df["Initial Appointment Date"].notna() & (df["Primary Estimate Total"] > 0)
+            & ~d.isin(DR["close_rate_exclude"]) & ~cb
+            & ~df["Job Category"].isin(S["job_categories"]["close_rate_exclude"])
+            & ~wt.isin(WT["close_rate_exclude"]))
+    team = df["Primary Salesperson"].isin(reps if reps is not None else SALES_TEAM)
+    # Demos in the period (the bottom of both rates).
+    m["close_sits_company"] = demo & window(df, "Initial Appointment Date", start, end)
+    m["close_sits_team"] = m["close_sits_company"] & team
+    # CLOSE RATE (scoreboard): approvals in the period / demos in the period. A sale counts in the period it was
+    # signed, even if its demo was earlier, so the number is final the day the period ends.
+    m["close_sold_company"] = demo & window(df, "Approved Milestone Date", start, end)
+    m["close_sold_team"] = m["close_sold_company"] & team
+    # DEMO CONVERSION: demos in the period that ever signed (credited back to the demo). For lead sources, campaigns,
+    # towns, setters and pitch tests. Keeps moving as late deals sign.
+    sold = df["Approved Milestone Date"].notna()
+    m["demo_conv_sold_company"] = m["close_sits_company"] & sold
+    m["demo_conv_sold_team"] = m["close_sits_team"] & sold
+    # GP %: the one GP rule (matches the CRM's certified GP report; in AccuLynx, Weekly Report CERTIFIED with Reference Date = Closed Milestone Date, no Call Backs).
+    # Jobs that went Closed in the period, upgrades included; $0 profit / 100% Profit % (costs not loaded) left out.
+    m["gp_jobs"] = (window(df, "Closed Milestone Date", start, end) & (df["Current Milestone"] == "Closed") & ~cb
+                    & (df["Profit"] != 0) & (df["Profit %"] != 1))
+    return m
+
+
+def metrics(df, start, end, reps=None):
+    m = masks(df, start, end, reps)
+    ca = df["Contract Amount"]
+    o = {k: int(m[k].sum()) for k in ["contacts", "leads", "appointments", "sits", "jobs_sold", "jobs_installed",
+                                      "close_sold_team", "close_sits_team", "close_sold_company", "close_sits_company",
+                                      "demo_conv_sold_team", "demo_conv_sold_company"]}
+    o["sales"] = round(ca[m["sales"]].sum(), 2)
+    o["revenue"] = round(ca[m["revenue"]].sum(), 2)
+    o["upgrades"] = round(ca[m["upgrades"]].sum(), 2)
+    o["gp_profit_closed"] = round(df.loc[m["gp_jobs"], "Profit"].sum(), 2)
+    o["gp_contract_closed"] = round(ca[m["gp_jobs"]].sum(), 2)
+    return o  # rates are always total / total from these counts
+
+
+def by_rep(df, mask, value=None):
+    """Count (or sum a column) per rep, with former reps removed."""
+    s = df[mask & ~df["Primary Salesperson"].isin(HIDDEN)]
+    g = s.groupby("Primary Salesperson")
+    return (g[value].sum() if value else g.size()).sort_values(ascending=False)
+
+
+def revenue_in_progress(rip_path, start=None, end=None):
+    r = pd.read_csv(rip_path)
+    r["_job"] = r["Job Number"] if "Job Number" in r else r["Job Name"].str.extract("(" + PREFIX + r"\d+)")[0]
+    r["Crew End Date"] = pd.to_datetime(r["Crew End Date"].str.split(" ").str[0], format="%m/%d/%y")
+    if start is not None:
+        r = r[(r["Crew End Date"] >= pd.Timestamp(start)) & (r["Crew End Date"] <= pd.Timestamp(end))]
+    jobs = r.drop_duplicates("_job")  # Job Value repeats on every trade row
+    return round(jobs["Job Value"].sum(), 2), len(jobs)
+
+
+def discounts(df, start, end):
+    """Sold jobs in the window (Approved date) with their discount %. Discount % = discount / price before discount.
+    Over the max total (settings.json), the rep owes their share of the overage."""
+    D = S["discounts"]
+    m = (window(df, "Approved Milestone Date", start, end) & (df["Contract Amount"] > 0)
+         & (df["_wt"] != UPG) & ~df["_cb"])
+    t = df.loc[m, ["Job Number", "Primary Salesperson", "Approved Milestone Date", "Contract Amount", "Discount Amount", "Job Number Url"]].copy()
+    disc = -t["Discount Amount"].fillna(0)
+    t["Price Before Discount"] = t["Contract Amount"] + disc
+    t["Discount %"] = (disc / t["Price Before Discount"] * 100).round(2)
+    over = (disc - t["Price Before Discount"] * D["max_total_pct"] / 100).clip(lower=0).round(2)
+    t["Over Max $"] = over
+    t["Rep Owes $"] = (over * D["rep_pays_share_of_overage"]).round(2)
+    t.loc[t["Primary Salesperson"].isin(HIDDEN), "Primary Salesperson"] = ""
+    return t
+
+
+def flags(df, start, end):
+    F = S["flags"]
+    d = df["_dead"]
+    # No customer names: flags show the job number (if any) and the CRM link.
+    want = ["Job Number", "Dead Lead Reason", "Primary Salesperson", "Appointment Set By", "Job Number Url", "Job Name Url"]
+    cols = [c for c in want if c in df.columns]
+    if "Job Number Url" in cols and "Job Name Url" in cols:
+        cols.remove("Job Name Url")
+    out = {
+        "quoted_but_marked_not_serviced": window(df, "Initial Appointment Date", start, end) & (df["Primary Estimate Total"] > 0) & d.isin(F["quoted_but_marked_not_serviced"]),
+        "booked_but_should_not_be": window(df, "Prospect Milestone Date", start, end) & d.isin(F["booked_but_should_not_be"]),
+        "trade_not_serviced_on_main_trade": window(df, "Lead Milestone Date", start, end) & d.str.startswith("Trade Not Serviced") & df["Job Trade Type"].fillna("").str.contains(F["main_trade"]),
+        "appointment_with_no_setter": window(df, "Prospect Milestone Date", start, end) & df["Appointment Set By"].isna() & ~df["_cb"] & ~df["_wt"].isin(WT["contacts_leads_appointments_exclude"]),
+        "closed_with_bad_profit": window(df, "Closed Milestone Date", start, end) & (df["Current Milestone"] == "Closed") & ~df["_cb"] & ((df["Profit"] <= 0) | (df["Profit %"] == 1)),
+    }
+    res = {"discount_over_max": discounts(df, start, end).query("`Over Max $` > 0.5")}
+    for k, v in out.items():
+        t = df.loc[v, cols].copy()
+        t.loc[t["Primary Salesperson"].isin(HIDDEN), "Primary Salesperson"] = ""  # former reps never shown
+        res[k] = t
+    return res
+
+
+# ---------------------------------------------------------------------------
+# Job Expenses report (data/job_expenses_latest.csv): every cost line on Closed jobs.
+# ---------------------------------------------------------------------------
+EX = S["expenses"]
+
+
+def load_expenses(path):
+    """One row per cost line, with a Bucket (Material, Labor, Dump, Commission...) and a Crew for labor/dump lines."""
+    e = pd.read_csv(path, low_memory=False)
+    for c in ["Payment Amount", "Job Value", "Additional Expenses", "Total Expenses", "Balance Due"]:
+        e[c] = pd.to_numeric(e[c], errors="coerce")
+    e = e[e["Total Expenses"].notna() & e["Job Number"].astype(str).str.startswith(PREFIX)].copy()  # drops the odd broken row
+    t = e["To/Method"].fillna("").str.strip()
+    e["Bucket"] = "Other"
+    done = pd.Series(False, index=e.index)
+    for bucket, pattern in EX["buckets"]:
+        hit = ~done & t.str.contains(pattern, case=False, regex=True)
+        e.loc[hit, "Bucket"] = bucket
+        done |= hit
+    e.loc[e["Payment Type"].eq("Additional"), "Bucket"] = "Commission"
+    crew = (t.str.replace(r"(?i)^(labor|other job expenses)\s+", "", regex=True)
+             .str.replace(r"(?i)\bcash\b\s*", "", regex=True)
+             .str.replace(r"(?i)\s+(pay adj|pay|dump)$", "", regex=True)
+             .str.replace(r"(?i),?\s+(inc|llc|corp)\.?$", "", regex=True).str.strip())
+    for wrong, right in S["expenses"].get("crew_names", {}).items():  # optional fixes for crew names typed two ways
+        if not wrong.startswith("_"):
+            crew = crew.where(~crew.str.lower().eq(wrong.lower()), right)
+    odd = t.str.lower().str.contains("|".join(EX["odd_line_words"]))
+    e["Crew"] = crew.where(e["Bucket"].isin(["Labor", "Dump"]) & ~odd)  # food and test lines are not a crew
+    return e
+
+
+def job_costs(exp, df, start=None, end=None):
+    """One row per Closed job: cost by bucket, Profit and GP % (from the job export), rep, crews.
+    Window = Closed date, same as GP %. "In GP" marks the jobs the GP % rule counts."""
+    piv = exp.pivot_table(index="Job Number", columns="Bucket", values="Payment Amount", aggfunc="sum", fill_value=0)
+    first = exp.groupby("Job Number").agg(**{"Job Value": ("Job Value", "first"), "Total Expenses": ("Total Expenses", "first"),
+                                            "Balance Due": ("Balance Due", "first"), "Job Number Url": ("Job Number Url", "first")})
+    crews = exp.dropna(subset=["Crew"]).groupby("Job Number")["Crew"].agg(lambda s: ", ".join(dict.fromkeys(s)))
+    j = df.set_index("Job Number")[["Primary Salesperson", "Work Type", "Job Trade Type", "Job Category", "Completed Milestone Date", "Closed Milestone Date", "Profit", "Profit %"]]
+    out = first.join(piv).join(crews.rename("Crews")).join(j, how="left")
+    out["GP %"] = (out["Profit"] / out["Job Value"] * 100).round(2)
+    cb = out["Job Trade Type"].fillna("").str.contains(S["call_back_text"])
+    out["In GP"] = ~cb & (out["Profit"] != 0) & (out["Profit %"] != 1)
+    if start is not None:
+        out = out[window(out, "Closed Milestone Date", start, end)]
+    out.loc[out["Primary Salesperson"].isin(HIDDEN), "Primary Salesperson"] = ""
+    return out
+
+
+def cost_summary(jc, by=None):
+    """Totals and % of job value per bucket, plus GP % vs the goal. Uses only the jobs the GP % rule counts
+    (upgrades in, no Call Backs, no $0 or 100% profit), so GP % here always equals the GP % metric. Optional group by a column."""
+    jc = jc[jc["In GP"]]
+    buckets = [b for b, _ in EX["buckets"]] + ["Other"]
+    cols = [b for b in buckets if b in jc.columns]
+
+    def one(g):
+        v = g["Job Value"].sum()
+        row = {"Jobs": len(g), "Job Value": round(v, 2), "Profit": round(g["Profit"].sum(), 2),
+               "GP %": round(g["Profit"].sum() / v * 100, 2) if v else None}
+        for b in cols:
+            row[b] = round(g[b].sum(), 2)
+            row[b + " %"] = round(g[b].sum() / v * 100, 2) if v else None
+        return pd.Series(row)
+
+    res = jc.groupby(by).apply(one) if by else one(jc).to_frame("All").T
+    res["GP goal %"] = EX["gp_goal_pct"]
+    return res
+
+
+def expense_flags(exp, df, start, end):
+    """Cost data that looks wrong on Closed jobs in the window."""
+    jc = job_costs(exp, df, start, end)
+    wt_ok = jc["Work Type"].isin(EX["flag_no_material_or_labor_work_types"]) & (jc["Job Value"] > 0)
+    get = lambda b: jc[b] if b in jc.columns else 0
+    odd = exp[exp["To/Method"].fillna("").str.lower().str.contains("|".join(EX["odd_line_words"]))
+              & exp["Job Number"].isin(jc.index)]
+    cols = ["Primary Salesperson", "Work Type", "Job Value", "Closed Milestone Date", "Job Number Url"]
+    return {
+        "closed_with_no_material": jc.loc[wt_ok & (get("Material") <= 0), cols],
+        "closed_with_no_labor": jc.loc[wt_ok & (get("Labor") <= 0), cols],
+        "sales_rep_job_with_no_commission": jc.loc[jc["Primary Salesperson"].isin(SALES_TEAM) & (jc["Work Type"] != UPG)
+                                                   & (jc["Job Value"] > 0) & (get("Commission") <= 0), cols],
+        "returns_bigger_than_material": jc.loc[(get("Material") < 0), cols],
+        "commission_paid_on_low_gp": jc.loc[jc["In GP"] & (get("Commission") > 0)
+                                            & (jc["GP %"] < EX["flag_commission_when_gp_below_pct"]), cols + ["GP %"]],
+        "odd_expense_lines": odd[["Job Number", "To/Method", "Payment Amount", "Memo/Notes", "Job Number Url"]],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Leadership scorecard (for example in Ninety). One Monday to Sunday week. Definitions in RULES.md section 13.
+# ---------------------------------------------------------------------------
+LS = S["leadership_scorecard"]
+
+
+def scorecard(df, ex, rip_path, report_date, data_date, week_start=None, reviews_path=None):
+    """Every leadership scorecard metric. The reporting week is the previous Monday to Sunday before
+    report_date (or the week starting `week_start` if given). Scheduled This Week is the week that
+    contains report_date. data_date = when the data was pulled (status.json); Backlog and A/R 30+ are as of then."""
+    rd = pd.Timestamp(report_date).normalize()
+    this_mon = rd - pd.Timedelta(days=rd.weekday())
+    s = pd.Timestamp(week_start).normalize() if week_start is not None else this_mon - pd.Timedelta(days=7)
+    e = s + pd.Timedelta(days=6)
+    sched_s = this_mon if week_start is None else s + pd.Timedelta(days=7)
+    sched_e = sched_s + pd.Timedelta(days=6)
+    asof = min(e, pd.Timestamp(data_date).tz_localize(None).normalize())
+    m, met = masks(df, s, e), metrics(df, s, e)
+    ca = df["Contract Amount"].fillna(0)
+    upg = df["_wt"] == UPG
+    r30s, r30e = rolling(asof, 30)
+    m30, t30 = masks(df, r30s, r30e), metrics(df, r30s, r30e)
+
+    comp = window(df, "Completed Milestone Date", s, e)
+    cb_jobs = df.loc[comp & df["_cb"], "Job Number"]
+    cb_cost = ex.loc[ex["Job Number"].isin(cb_jobs), "Payment Amount"].sum()
+
+    now = pd.Timestamp(data_date).tz_localize(None).normalize()
+    bl = (df["Current Milestone"] == "Approved") & df["Current Status"].isin(LS["backlog_statuses"])
+    ar = (df["Current Milestone"] == "Invoiced") & (df["Invoiced Milestone Date"] <= now - pd.Timedelta(days=LS["ar_days"]))
+
+    done = df.loc[masks(df, sched_s, sched_e)["revenue"], ["Job Number", "Contract Amount"]]
+    rip = pd.read_csv(rip_path)
+    rip["_start"] = pd.to_datetime(rip["Crew Start Date"].astype(str).str.split(" ").str[0], format="%m/%d/%y", errors="coerce")
+    togo = rip[(rip["_start"] >= sched_s) & (rip["_start"] <= sched_e) & ~rip["Job Number"].isin(done["Job Number"])].drop_duplicates("Job Number")
+
+    # GP% (R30): every job that went Closed in the rolling 30 (upgrades included). Call Backs left out, and jobs
+    # with $0 profit or 100% profit % (costs not loaded).
+    gp = m30["gp_jobs"]  # same GP % rule as everywhere else
+    five = None
+    if reviews_path is not None and Path(reviews_path).exists():
+        rv = pd.read_csv(reviews_path)
+        t = pd.to_datetime(rv["created_utc"], utc=True).dt.tz_convert(TZ).dt.tz_localize(None).dt.normalize()
+        five = int(((rv["stars"].astype(str) == "5") & (t >= s) & (t <= e)).sum())
+    avg_ticket = round(ca[m30["revenue"]].sum() / m30["jobs_installed"].sum(), 2) if m30["jobs_installed"].sum() else None
+    vals = {
+        # scorecard names (the measurables on the leadership scorecard, RULES.md section 13)
+        "Contacts": met["contacts"],
+        "MQLs (Leads)": met["leads"],
+        "SQLs (Appointments)": met["appointments"],
+        "SITS": met["sits"],
+        "Revenue $": met["revenue"],
+        "AVG Ticket (R30)": avg_ticket,
+        "Cash Balance": None,  # not in the CRM: entered from the bank
+        # older names, kept so anything that still asks for them keeps working
+        "Contacts (Lead Milestone)": met["contacts"],
+        "Sits": met["sits"],
+        "Total Callback Cost": round(cb_cost, 2),
+        "Approved Experiences #": int((m["sales"] & ~upg).sum()),
+        "Approved Experiences $": round(ca[m["sales"] & ~upg].sum(), 2),
+        "Total Upgrade $": round(ca[m["sales"] & upg].sum(), 2),
+        "Close Rate (R30)": round(t30["close_sold_company"] / t30["close_sits_company"] * 100, 2) if t30["close_sits_company"] else None,
+        "Backlog $": round(ca[bl].sum(), 2),
+        "Backlog #": int(bl.sum()),
+        "A/R 30+": round(ca[ar].sum(), 2),
+        "Scheduled This Week $": round(done["Contract Amount"].sum() + togo["Job Value"].sum(), 2),
+        "Scheduled This Week #": len(done) + len(togo),
+        "Completed Jobs $": met["revenue"],
+        "Completed Jobs #": met["jobs_installed"],
+        "Avg Ticket (R30)": avg_ticket,
+        "GP% (R30)": round(df.loc[gp, "Profit"].sum() / ca[gp].sum() * 100, 2) if ca[gp].sum() else None,
+        "New 5-Star Google Reviews": five,
+    }
+    ops = {">=": lambda a, b: a >= b, "<=": lambda a, b: a <= b, ">": lambda a, b: a > b,
+           "between": lambda a, b: b[0] <= a <= b[1]}
+    rows = []
+    for x in LS["metrics"]:
+        v = vals[x["name"]]
+        op, goal = x["goal"]
+        shown = f"{goal[0]:,} to {goal[1]:,}" if op == "between" else f"{op} {goal:,}"
+        rows.append({"Metric": x["name"], "Owner": x["owner"], "Goal": shown, "Actual": v,
+                     "On Track": None if v is None else ops[op](v, goal)})
+    out = pd.DataFrame(rows)
+    out.attrs.update(week=f"{s.date()} to {e.date()}", scheduled_week=f"{sched_s.date()} to {sched_e.date()}",
+                     r30=f"{r30s.date()} to {r30e.date()}", snapshot=str(now.date()))
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Marketing performance: ad spend (Windsor.ai) matched to CRM lead sources. RULES.md section 14.
+# ---------------------------------------------------------------------------
+MK = S["marketing"]
+
+
+def load_ads(path):
+    """Daily spend per campaign, with the CRM Parent and Sub Lead Source each campaign feeds."""
+    a = pd.read_csv(path)
+    a["date"] = pd.to_datetime(a["date"])
+    for c in ["spend", "impressions", "clicks", "platform_leads"]:
+        a[c] = pd.to_numeric(a[c], errors="coerce").fillna(0)
+    a["Parent Lead Source"] = a["platform"].map(MK["platform_parent_source"])
+    a["Sub Lead Source"] = None
+    camp = a["campaign"].fillna("").str.lower()
+    for platform, pattern, sub in MK["campaign_map"]:
+        hit = a["Sub Lead Source"].isna() & (a["platform"] == platform) & camp.str.contains(pattern, regex=True)
+        a.loc[hit, "Sub Lead Source"] = sub
+    return a
+
+
+def _gppc(df, end, key, value):
+    """Gross Profit Per Customer: total Profit on the GP % jobs from this source closed in the lookback window
+    (upgrades included), divided by the number of customers (those jobs minus upgrades)."""
+    e = pd.Timestamp(end)
+    s = e - pd.Timedelta(days=MK["gppc_lookback_days"])
+    ok = masks(df, s, e)["gp_jobs"] & (df[key] == value)
+    customers = int((ok & (df["_wt"] != UPG)).sum())
+    return (round(df.loc[ok, "Profit"].sum() / customers, 2) if customers else None), customers
+
+
+def _channel(df):
+    """Paid campaign sources roll up to their ad platform ("Meta", "Google Ads"); everything else uses the Parent Lead Source.
+    This keeps organic Google (search, GBP) and organic Facebook out of the paid numbers."""
+    paid = {sub: platform for platform, _, sub in MK["campaign_map"]}
+    sub = df["Sub Lead Source"]
+    return sub.map(paid).fillna(df["Parent Lead Source"])
+
+
+def marketing_report(df, ads, start, end, by="Channel"):
+    """One row per Channel (default: paid campaigns roll up to Meta / Google Ads, everything else by Parent Lead Source),
+    or per Sub Lead Source / Parent Lead Source: spend, CRM funnel,
+    cost per lead / appointment / sit, Demo Conversion (lead sources are judged on Demo Conversion, never Close Rate), CAC, revenue, ROAS, GPPC and GPPC:CAC. The CRM is the source of truth for
+    everything after spend. Channels with no spend data still show their funnel."""
+    df = df.assign(Channel=_channel(df))
+    ads = ads.assign(Channel=ads["platform"])
+    m = masks(df, start, end)
+    ca = df["Contract Amount"].fillna(0)
+    a = ads[(ads["date"] >= pd.Timestamp(start)) & (ads["date"] <= pd.Timestamp(end))]
+    spend = a.groupby(by)["spend"].sum()
+    plat = a.groupby(by)["platform_leads"].sum()
+    keys = df.loc[m["contacts"] | m["sits"] | m["sales"], by].dropna().unique().tolist()
+    keys = sorted(set(keys) | set(spend.index), key=str)
+    mins = MK["channel_judgment_minimums"]
+    weeks = (pd.Timestamp(end) - pd.Timestamp(start)).days / 7
+    rows = []
+    for k in keys:
+        src = df[by] == k
+        n = {x: int((m[x] & src).sum()) for x in ["leads", "appointments", "sits", "jobs_sold", "close_sits_company", "demo_conv_sold_company"]}
+        sales = round(ca[m["sales"] & src].sum(), 2)
+        sp = round(spend.get(k, 0), 2) if k in spend.index else None
+        gppc, closed_n = _gppc(df, end, by, k)
+        cac = round(sp / n["jobs_sold"], 2) if sp and n["jobs_sold"] else None
+        rows.append({
+            by: k, "Ad Spend": sp, "Platform Leads": int(plat.get(k, 0)) if k in plat.index else None,
+            "Leads": n["leads"], "Appointments": n["appointments"], "Sits": n["sits"], "Jobs Sold": n["jobs_sold"], "Sales $": sales,
+            "Lead to Appt %": round(n["appointments"] / n["leads"] * 100, 1) if n["leads"] else None,
+            "Cost per Lead": round(sp / n["leads"], 2) if sp and n["leads"] else None,
+            "Cost per Appt": round(sp / n["appointments"], 2) if sp and n["appointments"] else None,
+            "Cost per Sit": round(sp / n["sits"], 2) if sp and n["sits"] else None,
+            "Demo Conversion %": round(n["demo_conv_sold_company"] / n["close_sits_company"] * 100, 1) if n["close_sits_company"] else None,
+            "CAC": cac, "ROAS": round(sales / sp, 2) if sp else None,
+            "GPPC": gppc, "GPPC:CAC": round(gppc / cac, 2) if gppc and cac else None,
+            "Closed Jobs (GPPC)": closed_n,
+            "Enough Data": weeks >= mins["weeks"] and n["sits"] >= mins["sits"] and closed_n >= mins["closed_jobs"],
+        })
+    out = pd.DataFrame(rows).sort_values("Ad Spend", ascending=False, na_position="last")
+    out.attrs["unmapped_spend"] = round(a.loc[a[by].isna(), "spend"].sum(), 2)
+    return out

@@ -1,0 +1,26 @@
+{
+  "_read_me": "How this company's CRM exports become the data contract files (docs/DATA-CONTRACT.md). For each file: 'match' is the export's file name pattern, 'columns' maps contract column -> the export's own column name (only list the ones that differ; same names need no line), 'date_format' is how the export writes dates (Python strftime, for example %Y-%m-%d), and 'values' translates the CRM's words into the contract's (for example its sold stage into Approved). The rules session fills this in with the client; guides/any-crm-guide.md walks through it.",
+  "files": {
+    "job_export_raw_latest.csv": {
+      "match": "*job*export*.csv",
+      "date_format": "",
+      "columns": {
+        "_example": "Job Number <- the export's 'Job #' column would be written as  \"Job Number\": \"Job #\""
+      },
+      "values": {
+        "Current Milestone": { "_example": "\"Sold\": \"Approved\", \"Installed\": \"Completed\", \"Lost\": \"Dead\"" }
+      }
+    },
+    "Revenue_In_Progress_latest.csv": {
+      "match": "*progress*.csv",
+      "date_format": "",
+      "columns": {}
+    },
+    "job_expenses_latest.csv": {
+      "match": "*expense*.csv",
+      "date_format": "",
+      "columns": {}
+    }
+  },
+  "values": {}
+}

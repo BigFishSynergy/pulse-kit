@@ -1,0 +1,229 @@
+{
+ "source": "Made-up sample numbers (not Census data)",
+ "zips": {
+  "99001": {
+   "homes_owned": 3000,
+   "housing_units": 4200,
+   "median_value": 260000,
+   "median_year_built": 1965,
+   "median_income": 58000
+  },
+  "99002": {
+   "homes_owned": 3977,
+   "housing_units": 5567,
+   "median_value": 275731,
+   "median_year_built": 1972,
+   "median_income": 64113
+  },
+  "99003": {
+   "homes_owned": 4954,
+   "housing_units": 6935,
+   "median_value": 291462,
+   "median_year_built": 1979,
+   "median_income": 70226
+  },
+  "99004": {
+   "homes_owned": 5931,
+   "housing_units": 8303,
+   "median_value": 307193,
+   "median_year_built": 1986,
+   "median_income": 76339
+  },
+  "99005": {
+   "homes_owned": 6908,
+   "housing_units": 9671,
+   "median_value": 322924,
+   "median_year_built": 1993,
+   "median_income": 82452
+  },
+  "99006": {
+   "homes_owned": 7885,
+   "housing_units": 11039,
+   "median_value": 338655,
+   "median_year_built": 2000,
+   "median_income": 88565
+  },
+  "99007": {
+   "homes_owned": 8862,
+   "housing_units": 12406,
+   "median_value": 354386,
+   "median_year_built": 2007,
+   "median_income": 94678
+  },
+  "99008": {
+   "homes_owned": 9839,
+   "housing_units": 13774,
+   "median_value": 370117,
+   "median_year_built": 2014,
+   "median_income": 100791
+  },
+  "99009": {
+   "homes_owned": 10816,
+   "housing_units": 15142,
+   "median_value": 385848,
+   "median_year_built": 1971,
+   "median_income": 106904
+  },
+  "99010": {
+   "homes_owned": 11793,
+   "housing_units": 16510,
+   "median_value": 401579,
+   "median_year_built": 1978,
+   "median_income": 113017
+  },
+  "99011": {
+   "homes_owned": 3770,
+   "housing_units": 5278,
+   "median_value": 417310,
+   "median_year_built": 1985,
+   "median_income": 119130
+  },
+  "99012": {
+   "homes_owned": 4747,
+   "housing_units": 6645,
+   "median_value": 433041,
+   "median_year_built": 1992,
+   "median_income": 125243
+  },
+  "99013": {
+   "homes_owned": 5724,
+   "housing_units": 8013,
+   "median_value": 448772,
+   "median_year_built": 1999,
+   "median_income": 131356
+  },
+  "99014": {
+   "homes_owned": 6701,
+   "housing_units": 9381,
+   "median_value": 464503,
+   "median_year_built": 2006,
+   "median_income": 137469
+  },
+  "99015": {
+   "homes_owned": 7678,
+   "housing_units": 10749,
+   "median_value": 480234,
+   "median_year_built": 2013,
+   "median_income": 143582
+  },
+  "99016": {
+   "homes_owned": 8655,
+   "housing_units": 12117,
+   "median_value": 495965,
+   "median_year_built": 1970,
+   "median_income": 59695
+  },
+  "99017": {
+   "homes_owned": 9632,
+   "housing_units": 13484,
+   "median_value": 511696,
+   "median_year_built": 1977,
+   "median_income": 65808
+  },
+  "99018": {
+   "homes_owned": 10609,
+   "housing_units": 14852,
+   "median_value": 527427,
+   "median_year_built": 1984,
+   "median_income": 71921
+  },
+  "99019": {
+   "homes_owned": 11586,
+   "housing_units": 16220,
+   "median_value": 543158,
+   "median_year_built": 1991,
+   "median_income": 78034
+  },
+  "99020": {
+   "homes_owned": 3563,
+   "housing_units": 4988,
+   "median_value": 558889,
+   "median_year_built": 1998,
+   "median_income": 84147
+  },
+  "99021": {
+   "homes_owned": 4540,
+   "housing_units": 6356,
+   "median_value": 574620,
+   "median_year_built": 2005,
+   "median_income": 90260
+  },
+  "99022": {
+   "homes_owned": 5517,
+   "housing_units": 7723,
+   "median_value": 590351,
+   "median_year_built": 2012,
+   "median_income": 96373
+  },
+  "99023": {
+   "homes_owned": 6494,
+   "housing_units": 9091,
+   "median_value": 606082,
+   "median_year_built": 1969,
+   "median_income": 102486
+  },
+  "99024": {
+   "homes_owned": 7471,
+   "housing_units": 10459,
+   "median_value": 621813,
+   "median_year_built": 1976,
+   "median_income": 108599
+  },
+  "99025": {
+   "homes_owned": 8448,
+   "housing_units": 11827,
+   "median_value": 637544,
+   "median_year_built": 1983,
+   "median_income": 114712
+  },
+  "99026": {
+   "homes_owned": 9425,
+   "housing_units": 13195,
+   "median_value": 273275,
+   "median_year_built": 1990,
+   "median_income": 120825
+  },
+  "99027": {
+   "homes_owned": 10402,
+   "housing_units": 14562,
+   "median_value": 289006,
+   "median_year_built": 1997,
+   "median_income": 126938
+  },
+  "99028": {
+   "homes_owned": 11379,
+   "housing_units": 15930,
+   "median_value": 304737,
+   "median_year_built": 2004,
+   "median_income": 133051
+  },
+  "99029": {
+   "homes_owned": 3356,
+   "housing_units": 4698,
+   "median_value": 320468,
+   "median_year_built": 2011,
+   "median_income": 139164
+  },
+  "99030": {
+   "homes_owned": 4333,
+   "housing_units": 6066,
+   "median_value": 336199,
+   "median_year_built": 1968,
+   "median_income": 145277
+  },
+  "99031": {
+   "homes_owned": 5310,
+   "housing_units": 7433,
+   "median_value": 351930,
+   "median_year_built": 1975,
+   "median_income": 61390
+  },
+  "99032": {
+   "homes_owned": 6287,
+   "housing_units": 8801,
+   "median_value": 367661,
+   "median_year_built": 1982,
+   "median_income": 67503
+  }
+ }
+}

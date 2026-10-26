@@ -1,0 +1,3 @@
+# Optional extras
+
+`ghl_calls.mjs` (from the original AccuLynx template) matches GoHighLevel setter calls to AccuLynx jobs and saves call transcripts per job. It is **not wired into any workflow** in the kit. It reads customer phone numbers and emails from both systems to make the match (keeping only one-way hashes, and masking phones, emails and addresses in transcripts), so turn it on only after a privacy review with the client, and only for AccuLynx plus GoHighLevel. It needs `GHL_API_KEY`, `GHL_LOCATION_ID` and `COMPANY_NAME` as repo secrets, the job number prefix filled in (its FILL_IN), and a step added to `pull-acculynx.yml` after the pull.

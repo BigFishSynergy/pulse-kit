@@ -1,0 +1,9 @@
+{
+  "name": "rapidroof-pipeline",
+  "private": true,
+  "type": "module",
+  "description": "Node side of the Pulse data job: uploads the built JSON to the private Vercel Blob store.",
+  "dependencies": {
+    "@vercel/blob": "2.8.1"
+  }
+}

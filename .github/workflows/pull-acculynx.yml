@@ -1,0 +1,74 @@
+name: pull-acculynx
+
+# The AccuLynx connector (connectors/acculynx). Every 30 minutes in working hours, grab the newest run of each scheduled
+# AccuLynx report and save it to the "data" branch, in the shape docs/DATA-CONTRACT.md describes. Read only on AccuLynx.
+# Runs only when the repo variable CRM_CONNECTOR is "acculynx". Customer names and contact details are dropped before
+# anything is saved (scripts/scrub.py). The rules on "main" are never touched by this job.
+
+on:
+  schedule:
+    - cron: "7,37 11-23 * * *"   # UTC: about 6 AM to 6 PM Central. Odd minutes, because GitHub drops many runs on the hour.
+  workflow_dispatch: {}          # the "Run workflow" button
+
+permissions:
+  contents: write
+  actions: write   # to start pulse-data when new data lands
+
+concurrency:
+  group: pull
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    if: vars.CRM_CONNECTOR == 'acculynx'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get the current data branch (empty on the very first run)
+        uses: actions/checkout@v4
+        with:
+          ref: data
+          path: databranch
+        continue-on-error: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Pull newest reports from AccuLynx
+        id: pull
+        env:
+          ACCULYNX_API_KEY: ${{ secrets.ACCULYNX_API_KEY }}
+          ACCULYNX_SCHEDULES: ${{ vars.ACCULYNX_SCHEDULES }}
+          WINDSOR_API_KEY: ${{ secrets.WINDSOR_API_KEY }}
+          DATA_DIR: databranch/data
+        run: node connectors/acculynx/pull.mjs
+
+      - name: Drop customer names and contact details
+        if: steps.pull.outputs.changed == 'true'
+        run: python3 scripts/scrub.py databranch/data
+
+      - name: Check the files match the data contract
+        if: steps.pull.outputs.changed == 'true'
+        run: python3 scripts/data_contract.py databranch/data
+
+      # Keep only the latest copy on the data branch: one fresh commit each time, so it never grows.
+      - name: Save to data branch (latest copy only)
+        if: steps.pull.outputs.changed == 'true'
+        working-directory: databranch
+        run: |
+          [ -d .git ] || git init -q
+          git config user.name "pulse-data-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -q --orphan fresh
+          git add -A data
+          git commit -q -m "data as of $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" fresh:data
+
+      - name: Rebuild the Pulse with the new data
+        if: steps.pull.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pulse-data.yml --repo ${{ github.repository }} || echo "::warning::could not start pulse-data (it runs on its own within 3 hours)"

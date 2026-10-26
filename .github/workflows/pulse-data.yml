@@ -1,0 +1,153 @@
+name: pulse-data
+
+# Build the Pulse numbers whenever new CRM data lands (and every 3 hours as a backstop): read the rules (main branch)
+# and the data (data branch), get the goals, run site/pipeline/build.py, write Monday's coaching cards and Speed Round,
+# upload the result to the private Vercel Blob store the site reads, and keep a copy (weekly archive, coaching, cached
+# sheets) on the pulse-data branch for the next run. Nothing is ever written to the CRM, and the raw CSV is never
+# uploaded anywhere: only the numbers the site shows, after the privacy check.
+#
+# Rules from another repo: set the repo variable RULES_REPO (owner/name) and the secret RULES_REPO_TOKEN (read only).
+
+on:
+  schedule:
+    - cron: "52 */3 * * *"   # backstop every 3 hours; the connectors start this job themselves when new data lands
+  workflow_dispatch:
+    inputs:
+      coaching:
+        description: "Rewrite this week's coaching cards"
+        type: boolean
+        default: false
+      speedround:
+        description: "Rewrite this week's Speed Round"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pulse-data
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Current pulse-data branch (empty the first time)
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: pulse-data
+          path: pulse-out
+
+      - name: The rules (main branch, read only)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.RULES_REPO || github.repository }}
+          ref: main
+          path: rules-src
+          fetch-depth: 0   # full history, so the build can fall back to the last rules that worked
+          token: ${{ secrets.RULES_REPO_TOKEN || github.token }}
+
+      - name: The CRM data (data branch, read only)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.RULES_REPO || github.repository }}
+          ref: data
+          path: crm-data
+          token: ${{ secrets.RULES_REPO_TOKEN || github.token }}
+
+      - name: Anything new since the last build?
+        id: fresh
+        run: |
+          NEW=$(python3 -c "import json; print(json.load(open('crm-data/data/status.json'))['job_export_raw']['runDate'])")
+          OLD=$(python3 -c "import json; print(json.load(open('pulse-out/latest/meta.json')).get('pulled_iso', '')[:19])" 2>/dev/null || true)
+          RULES=$(git -C rules-src log -1 --format=%h -- rules)
+          LAST=$(python3 -c "import json; print(json.load(open('pulse-out/latest/meta.json')).get('rules_commit', ''))" 2>/dev/null || true)
+          if [ "${NEW:0:19}" = "$OLD" ] && [ "$RULES" = "$LAST" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ] && [ "$(date -u +%H)" != "12" ] && [ "$(date -u +%H)" != "13" ]; then
+            echo "Nothing new (data $NEW, rules $RULES). Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-python@v5
+        if: steps.fresh.outputs.skip != 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: site/pipeline/requirements.txt
+
+      - if: steps.fresh.outputs.skip != 'true'
+        run: pip install -r site/pipeline/requirements.txt
+
+      - name: Goals and spend
+        if: steps.fresh.outputs.skip != 'true'
+        env:
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+        run: |
+          mkdir -p pulse-out
+          python site/pipeline/fetch_sheets.py --rules rules-src/rules --out sheets --cache pulse-out/inputs
+
+      - name: Build the numbers
+        if: steps.fresh.outputs.skip != 'true'
+        # If the newest rules break the build, build with the last rules that worked (the rules_commit of the last good
+        # run) so the Pulse keeps updating. meta.json records it and the site DMs the admin once (/pulse/api/notices/build).
+        run: |
+          export RULES_COMMIT=$(git -C rules-src log -1 --format=%h -- rules)
+          if python site/pipeline/build.py --rules rules-src/rules --data crm-data/data --sheets sheets --out pulse-out; then
+            exit 0
+          fi
+          GOOD=$(python -c "import json; print(json.load(open('pulse-out/latest/meta.json')).get('rules_commit', ''))" 2>/dev/null || true)
+          if [ -z "$GOOD" ] || [ "$GOOD" = "$RULES_COMMIT" ]; then
+            echo "::error::The build failed and there are no earlier rules to fall back to."
+            exit 1
+          fi
+          echo "::warning::The newest rules ($RULES_COMMIT) broke the build. Building with the last rules that worked ($GOOD)."
+          git -C rules-src checkout -q "$GOOD" -- rules
+          export RULES_FALLBACK="$RULES_COMMIT" RULES_COMMIT="$GOOD"
+          python site/pipeline/build.py --rules rules-src/rules --data crm-data/data --sheets sheets --out pulse-out
+
+      - name: Weekly coaching cards (Monday, or when this week's are missing)
+        if: steps.fresh.outputs.skip != 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          FORCE=""
+          if [ "${{ inputs.coaching }}" = "true" ]; then FORCE="--force"; fi
+          python site/pipeline/coach.py --out pulse-out --data crm-data/data --rules rules-src/rules $FORCE || echo "::warning::coaching cards not written"
+
+      - name: Weekly Speed Round (Monday, or when this week's is missing)
+        if: steps.fresh.outputs.skip != 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          FORCE=""
+          if [ "${{ inputs.speedround }}" = "true" ]; then FORCE="--force"; fi
+          python site/pipeline/quiz.py --out pulse-out --data crm-data/data --rules rules-src/rules $FORCE || echo "::warning::speed round not written"
+
+      - uses: actions/setup-node@v4
+        if: steps.fresh.outputs.skip != 'true'
+        with:
+          node-version: "22"
+
+      - name: Upload to the private Vercel Blob store the site reads
+        if: steps.fresh.outputs.skip != 'true'
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: |
+          npm install --prefix site/pipeline --no-audit --no-fund --silent
+          node site/pipeline/upload_blob.mjs pulse-out
+
+      - name: Save to the pulse-data branch (one commit, history not kept)
+        if: steps.fresh.outputs.skip != 'true'
+        run: |
+          cd pulse-out
+          rm -rf .git
+          git init -q -b pulse-data
+          git config user.name "pulse-data bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -qm "Pulse data $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" pulse-data

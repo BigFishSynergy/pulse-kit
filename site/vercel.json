@@ -1,0 +1,15 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "data": false,
+      "pulse-data": false,
+      "imports": false
+    }
+  },
+  "crons": [
+    { "path": "/pulse/api/activity/weekly", "schedule": "0 13 * * 1" },
+    { "path": "/pulse/api/notices/coaching", "schedule": "25 * * * *" },
+    { "path": "/pulse/api/notices/daily", "schedule": "0 * * * *" },
+    { "path": "/pulse/api/notices/build", "schedule": "50 * * * *" }
+  ]
+}

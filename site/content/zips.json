@@ -1,0 +1,203 @@
+{
+ "regions": [
+  "North County",
+  "South County"
+ ],
+ "outside_label": "Outside the service area",
+ "region_word": "County",
+ "zips": {
+  "99001": {
+   "town": "Cedar Hollow",
+   "region": "North County",
+   "lat": 30.4387,
+   "lng": -97.9641
+  },
+  "99002": {
+   "town": "Pecan Ridge",
+   "region": "North County",
+   "lat": 30.4387,
+   "lng": -97.8745
+  },
+  "99003": {
+   "town": "Bluebonnet",
+   "region": "North County",
+   "lat": 30.4387,
+   "lng": -97.7848
+  },
+  "99004": {
+   "town": "Mesa Verde",
+   "region": "North County",
+   "lat": 30.4387,
+   "lng": -97.6952
+  },
+  "99005": {
+   "town": "Stone Creek",
+   "region": "North County",
+   "lat": 30.4387,
+   "lng": -97.6055
+  },
+  "99006": {
+   "town": "Oak Bend",
+   "region": "North County",
+   "lat": 30.4387,
+   "lng": -97.5159
+  },
+  "99007": {
+   "town": "Willow Park",
+   "region": "North County",
+   "lat": 30.3712,
+   "lng": -97.92
+  },
+  "99008": {
+   "town": "Granite Falls",
+   "region": "North County",
+   "lat": 30.3712,
+   "lng": -97.8304
+  },
+  "99009": {
+   "town": "Sunset Valley",
+   "region": "North County",
+   "lat": 30.3712,
+   "lng": -97.7407
+  },
+  "99010": {
+   "town": "Prairie View",
+   "region": "North County",
+   "lat": 30.3712,
+   "lng": -97.6511
+  },
+  "99011": {
+   "town": "Elm Crossing",
+   "region": "North County",
+   "lat": 30.3712,
+   "lng": -97.5614
+  },
+  "99012": {
+   "town": "Red Rock",
+   "region": "North County",
+   "lat": 30.3712,
+   "lng": -97.4718
+  },
+  "99013": {
+   "town": "Mill Creek",
+   "region": "North County",
+   "lat": 30.3038,
+   "lng": -97.9641
+  },
+  "99014": {
+   "town": "Brushy Springs",
+   "region": "North County",
+   "lat": 30.3038,
+   "lng": -97.8745
+  },
+  "99015": {
+   "town": "Lakeway Point",
+   "region": "North County",
+   "lat": 30.3038,
+   "lng": -97.7848
+  },
+  "99016": {
+   "town": "Hill Top",
+   "region": "North County",
+   "lat": 30.3038,
+   "lng": -97.6952
+  },
+  "99017": {
+   "town": "Fox Run",
+   "region": "North County",
+   "lat": 30.3038,
+   "lng": -97.6055
+  },
+  "99018": {
+   "town": "Quail Hollow",
+   "region": "North County",
+   "lat": 30.3038,
+   "lng": -97.5159
+  },
+  "99019": {
+   "town": "River Oaks",
+   "region": "South County",
+   "lat": 30.2362,
+   "lng": -97.92
+  },
+  "99020": {
+   "town": "Sandy Bend",
+   "region": "South County",
+   "lat": 30.2362,
+   "lng": -97.8304
+  },
+  "99021": {
+   "town": "Copper Ridge",
+   "region": "South County",
+   "lat": 30.2362,
+   "lng": -97.7407
+  },
+  "99022": {
+   "town": "Thistle Gap",
+   "region": "South County",
+   "lat": 30.2362,
+   "lng": -97.6511
+  },
+  "99023": {
+   "town": "Deer Park",
+   "region": "South County",
+   "lat": 30.2362,
+   "lng": -97.5614
+  },
+  "99024": {
+   "town": "Juniper Flats",
+   "region": "South County",
+   "lat": 30.2362,
+   "lng": -97.4718
+  },
+  "99025": {
+   "town": "Maple Grove",
+   "region": "South County",
+   "lat": 30.1687,
+   "lng": -97.9641
+  },
+  "99026": {
+   "town": "Pine Knoll",
+   "region": "South County",
+   "lat": 30.1687,
+   "lng": -97.8745
+  },
+  "99027": {
+   "town": "Coyote Wells",
+   "region": "South County",
+   "lat": 30.1687,
+   "lng": -97.7848
+  },
+  "99028": {
+   "town": "Shady Acres",
+   "region": "South County",
+   "lat": 30.1687,
+   "lng": -97.6952
+  },
+  "99029": {
+   "town": "North Fork",
+   "region": "South County",
+   "lat": 30.1687,
+   "lng": -97.6055
+  },
+  "99030": {
+   "town": "Iron Gate",
+   "region": "South County",
+   "lat": 30.1687,
+   "lng": -97.5159
+  },
+  "99031": {
+   "town": "Outside 1",
+   "region": "OUT",
+   "lat": 30.1013,
+   "lng": -97.92
+  },
+  "99032": {
+   "town": "Outside 2",
+   "region": "OUT",
+   "lat": 30.1013,
+   "lng": -97.8304
+  }
+ },
+ "background": []
+}

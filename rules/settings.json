@@ -1,0 +1,339 @@
+{
+  "_read_me": "The lists the metrics code uses. Names must match the CRM EXACTLY (spelling, spaces, capital letters). Every spot with the fill-in tag needs your company's info: replace the value, then delete that note. The check-rules Action stays red until every fill-in tag is gone. After saving, check the Actions tab: green check means the rules work, red X means something needs fixing.",
+  "sales_team": {
+    "_note": "FILL_IN: your sales reps. Left side = exact CRM Primary Salesperson name. Right side = nicknames people use in chat. Default roster for close rate and rep performance. Replace the examples, then delete the FILL_IN part of this note.",
+    "Rep Name One": [
+      "Nickname"
+    ],
+    "Rep Name Two": [
+      "Nickname"
+    ]
+  },
+  "new_reps_not_in_acculynx_yet": {
+    "_note": "Brand new reps on sales_team who have no CRM jobs yet. The rules check skips them until they show up. Leave empty if none.",
+    "names": []
+  },
+  "not_sales_team": {
+    "_note": "FILL_IN: people who sell sometimes but are not on the sales team (owner, production, managers). Left out of close rate and rep views unless asked for by name. Replace the example, then delete the FILL_IN part of this note.",
+    "Person Name": "Role"
+  },
+  "hidden_former_reps": {
+    "_note": "Former reps. Never shown by name in rep views. Their past deals still count in company totals. Leave empty if none.",
+    "names": []
+  },
+  "dead_reasons": {
+    "_note": "FILL_IN: the dead reason names below are examples. Swap in your exact CRM Dead Lead Reason names, then delete the FILL_IN part of this note. Matched by EXACT name: 'Trade Not Serviced' does not include 'Trade Not Serviced (CSR)'.",
+    "contacts_exclude": [
+      "Duplicate",
+      "Test Lead"
+    ],
+    "leads_and_appointments_exclude": [
+      "Area Not Serviced",
+      "Area Not Serviced (CSR)",
+      "Bad Lead from Lead Service",
+      "Duplicate",
+      "Test Lead",
+      "Trade Not Serviced",
+      "Trade Not Serviced (CSR)"
+    ],
+    "sits_exclude": [
+      "Test Lead",
+      "Trade Not Serviced",
+      "Trade Not Serviced (Sales)"
+    ],
+    "close_rate_exclude": [
+      "Area Not Serviced",
+      "Bad Lead from Lead Service",
+      "Duplicate",
+      "No Chance To Meet",
+      "No Damage",
+      "Trade Not Serviced"
+    ]
+  },
+  "work_types": {
+    "upgrade": "Upsell / Change Order",
+    "contacts_leads_appointments_exclude": [
+      "Service",
+      "Upsell / Change Order"
+    ],
+    "close_rate_exclude": [
+      "Insurance",
+      "Inspection",
+      "Retail",
+      "Service",
+      "Warranty"
+    ],
+    "_note": "FILL_IN: check these match your CRM Work Type names exactly (upgrade = the work type you use for upsells and change orders), then delete this note."
+  },
+  "job_categories": {
+    "close_rate_exclude": [
+      "Property Management"
+    ],
+    "_note": "FILL_IN: check this matches your CRM Job Category names, then delete this note."
+  },
+  "milestones": {
+    "sales_count_if_currently": [
+      "Approved",
+      "Completed",
+      "Invoiced",
+      "Closed"
+    ],
+    "revenue_count_if_currently": [
+      "Completed",
+      "Invoiced",
+      "Closed"
+    ]
+  },
+  "call_back_text": "Call Back",
+  "flags": {
+    "quoted_but_marked_not_serviced": [
+      "Area Not Serviced",
+      "Area Not Serviced (CSR)",
+      "Trade Not Serviced (CSR)",
+      "Bad Lead from Lead Service"
+    ],
+    "booked_but_should_not_be": [
+      "Area Not Serviced",
+      "Area Not Serviced (CSR)",
+      "Bad Lead from Lead Service",
+      "Trade Not Serviced",
+      "Trade Not Serviced (CSR)"
+    ],
+    "main_trade": "Roofing",
+    "_note": "FILL_IN: dead reasons that flag bad data, and your main trade. Swap in your own, then delete this note."
+  },
+  "goals": {
+    "_note": "FILL_IN: your goals Google Sheet id (from its URL) and your yearly sales goal. Replace both, then delete this note.",
+    "sheet_id": "",
+    "original_yearly_sales_goal": 0
+  },
+  "expenses": {
+    "_read_me": "Job Expenses report. One row per cost line on Closed jobs. Payment Type 'Additional' = commission. Buckets are matched in this order against the To/Method text (case does not matter); first match wins; no match = Other.",
+    "gp_goal_pct": 0,
+    "gp_goal_source": "",
+    "buckets": [
+      [
+        "Commission",
+        "commission"
+      ],
+      [
+        "Dump",
+        "\\bdump\\b"
+      ],
+      [
+        "Material",
+        "^materials?\\b"
+      ],
+      [
+        "Labor",
+        "^labor\\b"
+      ],
+      [
+        "CC Fee",
+        "cc fee"
+      ],
+      [
+        "Warranty",
+        "warranty"
+      ],
+      [
+        "Sales Tax",
+        "sales tax"
+      ],
+      [
+        "Permits",
+        "permit"
+      ],
+      [
+        "Marketing",
+        "marketing"
+      ]
+    ],
+    "flag_no_material_or_labor_work_types": [
+      "New",
+      "Repair"
+    ],
+    "odd_line_words": [
+      "test",
+      "snack",
+      "lunch",
+      "burger",
+      "mcdonald",
+      "check to customer"
+    ],
+    "flag_commission_when_gp_below_pct": 25,
+    "_note": "FILL_IN: your GP % goal (gp_goal_pct), the commission flag threshold, and the bucket words that match how your expense lines are written. Replace them, then delete this note.",
+    "crew_names": {
+      "_note": "Optional. A crew name typed two ways in expense lines, lower case on the left, the right spelling on the right. Leave empty if none."
+    }
+  },
+  "discounts": {
+    "_read_me": "Allowed discounts, their max %, and the max total. Anything over the max total, the rep pays rep_pays_share_of_overage of the overage.",
+    "_note": "FILL_IN: your discount names exactly as they appear in the CRM and their %, or leave allowed_pct empty and max_total_pct at 0 if you don't police discounts. Then delete this note.",
+    "allowed_pct": {
+      "Discount Name": 0
+    },
+    "max_total_pct": 0,
+    "rep_pays_share_of_overage": 0
+  },
+  "leadership_scorecard": {
+    "_read_me": "Your leadership scorecard (for example in Ninety), in order. Weekly, Monday to Sunday. Owner initials and goal for each. Goal 'between' = inside the range.",
+    "metrics": [
+      {
+        "name": "Contacts",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "MQLs (Leads)",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "SQLs (Appointments)",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "SITS",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "Close Rate (R30)",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "Approved Experiences $",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "Scheduled This Week $",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "Revenue $",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "AVG Ticket (R30)",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "GP% (R30)",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "Backlog $",
+        "owner": "",
+        "goal": [
+          "between",
+          [
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "New 5-Star Google Reviews",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      },
+      {
+        "name": "A/R 30+",
+        "owner": "",
+        "goal": [
+          "<=",
+          0
+        ]
+      },
+      {
+        "name": "Cash Balance",
+        "owner": "",
+        "goal": [
+          ">=",
+          0
+        ]
+      }
+    ],
+    "backlog_statuses": [
+      "Scheduled",
+      "In Progress"
+    ],
+    "ar_days": 30,
+    "_note": "FILL_IN: set an owner and goal for each metric (remove ones you don't track), then delete this note."
+  },
+  "marketing": {
+    "_read_me": "Ad spend from Windsor.ai matched to CRM lead sources. Each campaign maps to the CRM Sub Lead Source its leads come in under (first match wins, case does not matter). Add a line when a new campaign launches. Campaigns with no match still count toward platform spend.",
+    "platform_parent_source": {
+      "Meta": "META",
+      "Google Ads": "GOOGLE"
+    },
+    "campaign_map": [
+      [
+        "Meta",
+        "campaign name words",
+        "YOUR-SUB-LEAD-SOURCE"
+      ],
+      [
+        "Google Ads",
+        ".",
+        "YOUR-SUB-LEAD-SOURCE"
+      ]
+    ],
+    "channel_judgment_minimums": {
+      "weeks": 6,
+      "sits": 20,
+      "closed_jobs": 10
+    },
+    "gppc_lookback_days": 365,
+    "_note": "FILL_IN: map each ad campaign to the CRM Sub Lead Source its leads come in under, and map each platform to its Parent Lead Source. Only needed if you use Windsor.ai for ad spend. Then delete this note."
+  },
+  "job_number_prefix": {
+    "_note": "FILL_IN: the prefix your CRM puts on your job numbers (for example JOB-1234). Replace the value, then delete this note.",
+    "value": "JOB-"
+  },
+  "timezone": {
+    "_note": "FILL_IN: your time zone (IANA name, like America/Chicago). Replace the value, then delete this note.",
+    "value": "America/New_York"
+  }
+}

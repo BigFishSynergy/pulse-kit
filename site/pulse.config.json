@@ -1,0 +1,121 @@
+{
+  "_read_me": "Everything company-specific about this Pulse lives in this one file. The rules (what counts as a lead, a sale, a sit) live in rules/settings.json and rules/RULES.md instead. Setup walks through every field (docs/SETUP.md, step 5). FILL_IN marks each value a new client changes; the sample values below are a made-up company for the sample run.",
+
+  "company": {
+    "name": "Summit Sample Roofing",
+    "short_name": "Summit",
+    "pulse_name": "Summit Pulse",
+    "site_url": "http://localhost:3000",
+    "what_we_do": "a residential roofing company",
+    "service_area": "Central Texas",
+    "_note": "FILL_IN: company name as the team says it, a short name for tight spots, what to call the Pulse, the live address of the site (for example https://pulse.yourcompany.com), one line on what the company does, and where it works. Claude uses the last two when it writes coaching notes, graphics and answers."
+  },
+
+  "brand": {
+    "logo": "/pulse/brand/logo.svg",
+    "logo_on_dark": "/pulse/brand/logo-white.svg",
+    "mark_on_dark": "/pulse/brand/mark-white.svg",
+    "colors": {
+      "primary": "#1F3A5F",
+      "primary_ink": "#FFFFFF",
+      "accent": "#F2B705",
+      "accent_ink": "#111111",
+      "ink": "#111111",
+      "board": "#F3F4F6"
+    },
+    "fonts": { "display": "Barlow Condensed", "body": "Inter" },
+    "_note": "FILL_IN: the client's logos (SVG or PNG in site/public/pulse/brand/) and their brand colors. primary is the header band, accent the small chips and highlights. Leave the defaults for a neutral navy and gold look."
+  },
+
+  "crm": {
+    "name": "AccuLynx",
+    "connector": "acculynx",
+    "record_word": "job",
+    "_note": "FILL_IN: the CRM's name as the team knows it (shown on the 'data pulled' chip), and which connector feeds the data branch: acculynx, csv (any CRM by export) or jobnimbus (coming)."
+  },
+
+  "timezone": "America/Chicago",
+  "_timezone_note": "FILL_IN: the company's time zone (IANA name). Use the same value as rules/settings.json timezone.",
+
+  "rules_repo": {
+    "repo": "",
+    "rules_ref": "main",
+    "data_ref": "data",
+    "_note": "Where the rules and the CRM data live. Leave repo blank to use this same repo (the normal setup). Set owner/name if the client keeps the rules in a separate repo."
+  },
+
+  "people": {
+    "leadership": [
+      { "name": "Pat Owner", "initials": "PO", "title": "Owner" },
+      { "name": "Sam Sales", "initials": "SS", "title": "Sales Manager" },
+      { "name": "Dana Ops", "initials": "DO", "title": "Operations" },
+      { "name": "Lee Books", "initials": "LB", "title": "Office Manager" }
+    ],
+    "nicknames": { "Alex Rivera": "Alex R" },
+    "admin": "pat",
+    "_note": "FILL_IN: leadership names and initials (initials match the scorecard owners in rules/settings.json), nicknames the team uses for reps (shown everywhere instead of the CRM name), and the login name of the admin who gets automatic notices and can post to Slack from the Pulse. Reps come from rules/settings.json sales_team; logins are added with node users.mjs."
+  },
+
+  "job_number_label": "Job #",
+
+  "pages": {
+    "scorecard": true,
+    "reports": true,
+    "moneyball": true,
+    "map": true,
+    "team": true,
+    "power": true,
+    "production": true,
+    "costs": true,
+    "marketing": true,
+    "csr": true,
+    "speed_round": true,
+    "ask_claude": true,
+    "graphics": true,
+    "requests": true,
+    "activity": true,
+    "slack": true,
+    "soundtrack": false,
+    "_note": "Turn whole pages on or off. Off pages disappear from the menus and return a 404. costs needs the job expenses report; marketing spend needs the spend sheet; ask_claude, graphics and speed_round need an Anthropic key; soundtrack needs music files the client owns (site/content/soundtrack.json)."
+  },
+
+  "slack": {
+    "channels": {
+      "pulse": { "name": "#pulse", "who": "leadership" },
+      "leadership": { "name": "#leadership", "who": "the leadership team" },
+      "sales": { "name": "#sales-team", "who": "the sales team" }
+    },
+    "daily_messages": true,
+    "requests_channel": "pulse",
+    "_note": "FILL_IN: channel names. The channel IDs go in the Vercel setting PULSE_SLACK_CHANNELS (pulse:C0123,leadership:C0456,sales:C0789), the bot token in PULSE_SLACK_BOT_TOKEN. Remove a channel you won't use."
+  },
+
+  "goals": {
+    "source": "file",
+    "file": "content/goals.json",
+    "spend_sheet_id": "",
+    "_note": "FILL_IN: where the quarterly goals come from. 'sheet' reads the Google Sheet whose id is in rules/settings.json goals.sheet_id (tabs Q1 to Q4, see docs/SETUP.md step 7). 'file' reads site/content/goals.json. spend_sheet_id is optional: a Google Sheet with Spend and Source map tabs for the Marketing page."
+  },
+
+  "map": {
+    "zips_file": "content/zips.json",
+    "shapes_file": "/pulse/zips.geojson",
+    "region_word": "County",
+    "center": [-97.74, 30.27],
+    "zoom": 9.3,
+    "_note": "FILL_IN: the service area. content/zips.json lists each zip with its town, region (county) and center; scripts/make_zip_files.py builds both files from the Census for a list of zips. center is [longitude, latitude]; zoom 9 to 10 fits a metro area."
+  },
+
+  "pipeline": {
+    "self_gen_source": "SELF GEN",
+    "at_risk_statuses": ["Pending Color Confirmation", "Finish Scheduling", "On Hold"],
+    "main_trade_word": "roofing",
+    "csr_min_appointments": 20,
+    "_note": "FILL_IN: the Parent Lead Source the reps use for their own leads, the CRM statuses that put a scheduled install at risk, and the word for your main trade in flag labels."
+  },
+
+  "content": {
+    "speed_round": "content/speed-round.md",
+    "_note": "Optional content the client supplies. speed_round: what the weekly Speed Round asks about (the company's core values, process, products). Without it, the Speed Round page stays off."
+  }
+}

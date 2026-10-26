@@ -1,0 +1,82 @@
+name: import-csv
+
+# The any-CRM connector (connectors/csv). Upload your CRM's exports to the "imports" folder on the "imports" branch
+# (guides/any-crm-guide.md shows how, on github.com, no tools needed). This turns them into the data contract files
+# using connectors/csv/mapping.json, drops customer names and contact details, checks them, saves them to the "data"
+# branch, and then empties the imports branch so the raw exports do not stay in the repo.
+
+on:
+  push:
+    branches: [imports]
+    paths: ["imports/**"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  actions: write   # to start pulse-data when new data lands
+
+concurrency:
+  group: pull
+  cancel-in-progress: false
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: The uploaded exports
+        uses: actions/checkout@v4
+        with:
+          ref: imports
+          path: inbox
+
+      - name: Get the current data branch (empty on the very first run)
+        uses: actions/checkout@v4
+        with:
+          ref: data
+          path: databranch
+        continue-on-error: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Convert to the data contract
+        run: python connectors/csv/convert.py --inbox inbox/imports --map connectors/csv/mapping.json --out databranch/data
+
+      - name: Drop customer names and contact details
+        run: python scripts/scrub.py databranch/data
+
+      - name: Check the files match the data contract
+        run: python scripts/data_contract.py databranch/data
+
+      - name: Save to data branch (latest copy only)
+        working-directory: databranch
+        run: |
+          [ -d .git ] || git init -q
+          git config user.name "pulse-data-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -q --orphan fresh
+          git add -A data
+          git commit -q -m "data as of $(date -u +%Y-%m-%dT%H:%M:%SZ) (CSV import)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" fresh:data
+
+      - name: Empty the imports branch (the raw exports are not kept)
+        working-directory: inbox
+        run: |
+          git config user.name "pulse-data-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -q --orphan empty
+          git rm -rq --cached . || true
+          mkdir -p imports && find imports -type f -delete && touch imports/.keep
+          git add imports/.keep
+          git commit -q -m "imports processed $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" empty:imports
+
+      - name: Rebuild the Pulse with the new data
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pulse-data.yml --repo ${{ github.repository }} || echo "::warning::could not start pulse-data (it runs on its own within 3 hours)"

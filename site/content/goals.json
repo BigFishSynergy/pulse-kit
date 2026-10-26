@@ -1,0 +1,339 @@
+{
+ "_read_me": "Quarterly goals, one block per quarter (the same every year until you change them). quarter = the quarter's goal, weekly = the weekly goal, owner = initials from pulse.config.json people.leadership. Rates are fractions (0.35 = 35%). actual is only for Net Profit and 5 Star Reviews, which are not in the CRM. Sample values for a made-up company.",
+ "Q1": {
+  "Contacts": {
+   "quarter": 630,
+   "weekly": 49,
+   "owner": "SS"
+  },
+  "Leads": {
+   "quarter": 504,
+   "weekly": 38,
+   "owner": "SS"
+  },
+  "Appointments": {
+   "quarter": 294,
+   "weekly": 22,
+   "owner": "SS"
+  },
+  "Sits": {
+   "quarter": 238,
+   "weekly": 18,
+   "owner": "SS"
+  },
+  "Sales": {
+   "quarter": 1120000,
+   "weekly": 86100,
+   "owner": "SS"
+  },
+  "Total Jobs": {
+   "quarter": 77,
+   "weekly": 6,
+   "owner": "SS"
+  },
+  "Revenue": {
+   "quarter": 1050000,
+   "weekly": 80500,
+   "owner": "DO"
+  },
+  "Upgrades ($)": {
+   "quarter": 31500,
+   "weekly": 2450,
+   "owner": "DO"
+  },
+  "AVG Ticket": {
+   "quarter": 14000,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Close Rate": {
+   "quarter": 0.35,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Booking Rate": {
+   "quarter": 0.6,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Sit Rate": {
+   "quarter": 0.82,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "UG % of Rev": {
+   "quarter": 0.03,
+   "weekly": null,
+   "owner": "DO"
+  },
+  "GP%": {
+   "quarter": 0.35,
+   "weekly": null,
+   "owner": "DO"
+  },
+  "Net Profit": {
+   "quarter": 168000,
+   "weekly": null,
+   "owner": "LB",
+   "actual": null
+  },
+  "5 Star Reviews": {
+   "quarter": 28,
+   "weekly": 2,
+   "owner": "PO",
+   "actual": null
+  }
+ },
+ "Q2": {
+  "Contacts": {
+   "quarter": 990,
+   "weekly": 77,
+   "owner": "SS"
+  },
+  "Leads": {
+   "quarter": 792,
+   "weekly": 61,
+   "owner": "SS"
+  },
+  "Appointments": {
+   "quarter": 462,
+   "weekly": 35,
+   "owner": "SS"
+  },
+  "Sits": {
+   "quarter": 374,
+   "weekly": 29,
+   "owner": "SS"
+  },
+  "Sales": {
+   "quarter": 1760000,
+   "weekly": 135300,
+   "owner": "SS"
+  },
+  "Total Jobs": {
+   "quarter": 121,
+   "weekly": 10,
+   "owner": "SS"
+  },
+  "Revenue": {
+   "quarter": 1650000,
+   "weekly": 126500,
+   "owner": "DO"
+  },
+  "Upgrades ($)": {
+   "quarter": 49500,
+   "weekly": 3850,
+   "owner": "DO"
+  },
+  "AVG Ticket": {
+   "quarter": 14000,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Close Rate": {
+   "quarter": 0.35,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Booking Rate": {
+   "quarter": 0.6,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Sit Rate": {
+   "quarter": 0.82,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "UG % of Rev": {
+   "quarter": 0.03,
+   "weekly": null,
+   "owner": "DO"
+  },
+  "GP%": {
+   "quarter": 0.35,
+   "weekly": null,
+   "owner": "DO"
+  },
+  "Net Profit": {
+   "quarter": 264000,
+   "weekly": null,
+   "owner": "LB",
+   "actual": null
+  },
+  "5 Star Reviews": {
+   "quarter": 44,
+   "weekly": 3,
+   "owner": "PO",
+   "actual": null
+  }
+ },
+ "Q3": {
+  "Contacts": {
+   "quarter": 1035,
+   "weekly": 80,
+   "owner": "SS"
+  },
+  "Leads": {
+   "quarter": 828,
+   "weekly": 63,
+   "owner": "SS"
+  },
+  "Appointments": {
+   "quarter": 483,
+   "weekly": 37,
+   "owner": "SS"
+  },
+  "Sits": {
+   "quarter": 391,
+   "weekly": 30,
+   "owner": "SS"
+  },
+  "Sales": {
+   "quarter": 1840000,
+   "weekly": 141450,
+   "owner": "SS"
+  },
+  "Total Jobs": {
+   "quarter": 126,
+   "weekly": 10,
+   "owner": "SS"
+  },
+  "Revenue": {
+   "quarter": 1725000,
+   "weekly": 132250,
+   "owner": "DO"
+  },
+  "Upgrades ($)": {
+   "quarter": 51750,
+   "weekly": 4025,
+   "owner": "DO"
+  },
+  "AVG Ticket": {
+   "quarter": 14000,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Close Rate": {
+   "quarter": 0.35,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Booking Rate": {
+   "quarter": 0.6,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Sit Rate": {
+   "quarter": 0.82,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "UG % of Rev": {
+   "quarter": 0.03,
+   "weekly": null,
+   "owner": "DO"
+  },
+  "GP%": {
+   "quarter": 0.35,
+   "weekly": null,
+   "owner": "DO"
+  },
+  "Net Profit": {
+   "quarter": 276000,
+   "weekly": null,
+   "owner": "LB",
+   "actual": 210000
+  },
+  "5 Star Reviews": {
+   "quarter": 46,
+   "weekly": 3,
+   "owner": "PO",
+   "actual": null
+  }
+ },
+ "Q4": {
+  "Contacts": {
+   "quarter": 900,
+   "weekly": 70,
+   "owner": "SS"
+  },
+  "Leads": {
+   "quarter": 720,
+   "weekly": 55,
+   "owner": "SS"
+  },
+  "Appointments": {
+   "quarter": 420,
+   "weekly": 32,
+   "owner": "SS"
+  },
+  "Sits": {
+   "quarter": 340,
+   "weekly": 26,
+   "owner": "SS"
+  },
+  "Sales": {
+   "quarter": 1600000,
+   "weekly": 123000,
+   "owner": "SS"
+  },
+  "Total Jobs": {
+   "quarter": 110,
+   "weekly": 9,
+   "owner": "SS"
+  },
+  "Revenue": {
+   "quarter": 1500000,
+   "weekly": 115000,
+   "owner": "DO"
+  },
+  "Upgrades ($)": {
+   "quarter": 45000,
+   "weekly": 3500,
+   "owner": "DO"
+  },
+  "AVG Ticket": {
+   "quarter": 14000,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Close Rate": {
+   "quarter": 0.35,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Booking Rate": {
+   "quarter": 0.6,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "Sit Rate": {
+   "quarter": 0.82,
+   "weekly": null,
+   "owner": "SS"
+  },
+  "UG % of Rev": {
+   "quarter": 0.03,
+   "weekly": null,
+   "owner": "DO"
+  },
+  "GP%": {
+   "quarter": 0.35,
+   "weekly": null,
+   "owner": "DO"
+  },
+  "Net Profit": {
+   "quarter": 240000,
+   "weekly": null,
+   "owner": "LB",
+   "actual": null
+  },
+  "5 Star Reviews": {
+   "quarter": 40,
+   "weekly": 3,
+   "owner": "PO",
+   "actual": 12
+  }
+ }
+}

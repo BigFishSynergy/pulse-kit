@@ -1,0 +1,23 @@
+name: acculynx-list-schedules
+
+# Setup helper. Run it from the Actions tab after the three AccuLynx reports are scheduled: it prints each scheduled
+# report's ID, name and the files it sent, for the ACCULYNX_SCHEDULES repo variable. Read only.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - env:
+          ACCULYNX_API_KEY: ${{ secrets.ACCULYNX_API_KEY }}
+        run: node connectors/acculynx/list_schedules.mjs

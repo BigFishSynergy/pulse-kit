@@ -1,0 +1,20 @@
+{
+  "job_export_raw": {
+    "runDate": "2026-10-25T13:05:00",
+    "schedule": "Sample",
+    "pulledAt": "2026-10-25T13:05:00Z",
+    "rows": 9612,
+    "file": "data/job_export_raw_latest.csv"
+  },
+  "revenue_in_progress": {
+    "runDate": "2026-10-25T13:05:00",
+    "schedule": "Sample",
+    "file": "data/Revenue_In_Progress_latest.csv"
+  },
+  "job_expenses_raw": {
+    "runDate": "2026-10-25T13:05:00",
+    "schedule": "Sample",
+    "file": "data/job_expenses_latest.csv"
+  },
+  "note": "Made-up sample data (sample/make_sample.py). No real company, people or customers."
+}

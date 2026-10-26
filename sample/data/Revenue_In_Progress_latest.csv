@@ -1,0 +1,29 @@
+Job Number,Job Number Url,Primary Salesperson,Trade Name,Crew Start Date,Crew End Date,Job Value,Current Status,Current Milestone
+JOB-2597,https://crm.example.com/records/59161,Riley Chen,Roofing,10/22/26 5:00 PM,10/24/26 10:30 PM,19782.74,Pending Color Confirmation,Approved
+JOB-2598,https://crm.example.com/records/59168,Jordan Lee,Roofing,10/23/26 10:00 PM,10/26/26 5:00 PM,14019.36,In Progress,Approved
+JOB-2600,https://crm.example.com/records/59183,Alex Rivera,Roofing,10/24/26 11:15 PM,10/26/26 9:00 AM,21186.76,Scheduled,Approved
+JOB-2604,https://crm.example.com/records/59197,Casey Morgan,Roofing,10/24/26 6:30 AM,10/27/26 4:15 AM,17878.68,In Progress,Approved
+JOB-2608,https://crm.example.com/records/59206,Jordan Lee,Roofing,10/25/26 11:15 AM,10/28/26 10:45 AM,28721.23,Scheduled,Approved
+JOB-2614,https://crm.example.com/records/59243,Alex Rivera,Roofing,10/22/26 10:30 PM,10/23/26 9:45 PM,18363.65,Pending Color Confirmation,Approved
+JOB-2628,https://crm.example.com/records/59330,Taylor Brooks,Roofing,11/04/26 3:30 PM,11/07/26 8:45 AM,11620.42,Scheduled,Approved
+JOB-2629,https://crm.example.com/records/59331,Morgan Patel,Roofing,10/24/26 8:45 AM,10/25/26 11:15 PM,12705.45,Scheduled,Approved
+JOB-2630,https://crm.example.com/records/59345,Alex Rivera,Roofing,10/22/26 11:45 AM,10/25/26 6:30 PM,10638.53,Pending Color Confirmation,Approved
+JOB-2632,https://crm.example.com/records/59351,Jordan Lee,Roofing,10/25/26 8:15 PM,10/26/26 4:15 PM,20942.54,Scheduled,Approved
+JOB-2635,https://crm.example.com/records/59366,Jordan Lee,Roofing,10/24/26 8:15 PM,10/25/26 10:30 AM,13434.78,Scheduled,Approved
+JOB-2638,https://crm.example.com/records/59369,Riley Chen,Roofing,10/31/26 6:45 PM,11/03/26 11:15 PM,19685.74,In Progress,Approved
+JOB-2639,https://crm.example.com/records/59371,Taylor Brooks,Siding,10/23/26 1:15 PM,10/25/26 9:45 PM,12773.60,Scheduled,Approved
+JOB-2642,https://crm.example.com/records/59390,Morgan Patel,Gutters,10/25/26 3:45 AM,10/28/26 3:15 AM,5333.76,In Progress,Approved
+JOB-2643,https://crm.example.com/records/59391,Jordan Lee,Roofing,10/26/26 11:00 PM,10/28/26 11:15 AM,16539.42,Scheduled,Approved
+JOB-2644,https://crm.example.com/records/59392,Taylor Brooks,Roofing,11/11/26 5:30 PM,11/14/26 2:15 PM,15154.59,In Progress,Approved
+JOB-2647,https://crm.example.com/records/59400,Riley Chen,Roofing,11/02/26 5:45 PM,11/03/26 4:15 PM,14376.57,Scheduled,Approved
+JOB-2648,https://crm.example.com/records/59409,Taylor Brooks,Gutters,10/25/26 4:30 AM,10/26/26 2:15 AM,8776.70,In Progress,Approved
+JOB-2649,https://crm.example.com/records/59415,Jordan Lee,Roofing,11/10/26 3:00 PM,11/13/26 8:45 PM,17797.10,Scheduled,Approved
+JOB-2650,https://crm.example.com/records/59435,Alex Rivera,Roofing,11/07/26 8:45 AM,11/08/26 5:45 AM,21460.48,In Progress,Approved
+JOB-2650,https://crm.example.com/records/59435,Alex Rivera,Gutters,11/07/26 9:30 PM,11/08/26 9:15 AM,21460.48,In Progress,Approved
+JOB-2651,https://crm.example.com/records/59450,Alex Rivera,Roofing,10/28/26 8:15 PM,10/30/26 1:30 PM,18937.47,In Progress,Approved
+JOB-2654,https://crm.example.com/records/59477,Riley Chen,Roofing,11/01/26 10:15 PM,11/04/26 4:00 AM,18757.38,Scheduled,Approved
+JOB-2655,https://crm.example.com/records/59489,Jordan Lee,Gutters,11/04/26 11:30 PM,11/05/26 5:00 AM,2497.42,Pending Color Confirmation,Approved
+JOB-2656,https://crm.example.com/records/59511,Taylor Brooks,Roofing,11/11/26 1:30 PM,11/13/26 1:45 PM,7722.00,In Progress,Approved
+JOB-2657,https://crm.example.com/records/59522,Morgan Patel,Roofing,11/02/26 9:45 PM,11/03/26 4:45 PM,11961.30,Scheduled,Approved
+JOB-2659,https://crm.example.com/records/59540,Riley Chen,Roofing,11/10/26 8:30 AM,11/12/26 5:15 PM,9930.66,Pending Color Confirmation,Approved
+JOB-2660,https://crm.example.com/records/59561,Riley Chen,Roofing,11/06/26 9:00 AM,11/07/26 5:45 AM,8344.11,Scheduled,Approved
