@@ -148,3 +148,19 @@ export async function deletePhoto(slug: string): Promise<PeopleState> {
   revalidatePath("/pulse/hq/people");
   return { done: "Photo removed." };
 }
+
+/** A rep or CSR adds or changes their own photo (never anyone else's), from their own screen. */
+export async function uploadMyPhoto(dataUrl: string): Promise<PeopleState> {
+  const s = await getSession();
+  const slug = s && !s.view ? (s.role === "rep" ? s.rep : s.role === "csr" ? s.csr : undefined) : undefined;
+  if (!slug) return { error: "Sign in on your own screen to add your photo." };
+  const { SLUG, savePhoto } = await import("@/lib/pulse/photos");
+  if (!SLUG.test(slug)) return { error: "Your login isn't linked to a rep or CSR yet." };
+  const m = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl);
+  if (!m) return { error: "That photo could not be read. Try a JPG or PNG." };
+  const buf = Buffer.from(m[1], "base64");
+  if (buf.length > 400_000) return { error: "That photo is too big. Try a smaller one." };
+  await savePhoto(slug, buf);
+  revalidatePath(s!.role === "csr" ? "/pulse/csr" : "/pulse/me");
+  return { done: "Looking good. Your photo is on your card now." };
+}

@@ -5,7 +5,7 @@ import { deletePhoto, uploadPhoto } from "@/app/pulse/people-actions";
 // Team photos on the People page: pick a photo, the browser crops it to a square and shrinks it, then it's saved.
 type Person = { name: string; slug: string; v?: number };
 
-async function squareJpeg(file: File, size = 480): Promise<string> {
+export async function squareJpeg(file: File, size = 480): Promise<string> {
   const url = URL.createObjectURL(file);
   try {
     const img = await new Promise<HTMLImageElement>((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = url; });

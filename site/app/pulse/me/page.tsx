@@ -6,6 +6,8 @@ import CleanRep from "@/components/pulse/CleanRep";
 import LookToggle from "@/components/pulse/LookToggle";
 import { getLook } from "@/lib/pulse/look";
 import Footer from "@/components/pulse/Footer";
+import MyPhoto from "@/components/pulse/MyPhoto";
+import { photoIndex } from "@/lib/pulse/photos";
 import { repNav } from "@/components/pulse/nav";
 import { adminFirst, CO, CRM } from "@/lib/pulse/config";
 
@@ -29,6 +31,7 @@ export default async function MyPulse() {
       ) : (
         <div className="state"><h2>Your numbers are on the way</h2><p className="sub">They show up after the next hourly data pull. If this stays empty, let {adminFirst()} know.</p></div>
       )}
+      {!s.view ? <MyPhoto slug={s.rep} name={s.name} v={(await photoIndex())[s.rep]} /> : null}
       <Footer />
     </div>
   );
