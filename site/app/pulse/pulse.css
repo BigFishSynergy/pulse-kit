@@ -1321,4 +1321,5 @@ html:has(.rr .tv.dark), body:has(.rr .tv.dark) { background: #0B0B0B; }
 .rr .tv-card-foot { margin: 0; font: 600 2.2vh var(--text); color: var(--muted); }
 .rr .pcard header h3 { display: flex; align-items: center; gap: 10px; }
 .rr .pcard .pface { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid var(--line-strong); }
-.rr .cl-name .cl-face { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; border: 2px solid var(--line-strong); }
+.rr .cl-name:has(.cl-face) { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rr .cl-name .cl-face { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid var(--line-strong); }
