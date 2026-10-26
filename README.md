@@ -40,7 +40,7 @@ Self-serve with the client's own Claude (`.claude/skills/pulse-setup/`): no term
 | `sample/` | A made-up company to prove the kit end to end, with screenshots |
 | `.claude/skills/pulse-setup/` | The Claude skill that walks a client through setup, builds what they ask for, and helps when they're stuck (Claude Code loads it on its own) |
 | `skill-template/` | The Claude skill that answers number questions from the rules and data |
-| `.github/workflows/` | pull-acculynx, import-csv, check-rules, pulse-data, and the setup buttons: acculynx-list-schedules, start-rules, prove-it, make-map |
+| `.github/workflows/` | pull-acculynx, import-csv, check-rules, pulse-data, kit-updates (every copy gets the kit's improvements as one pull request to approve; `.pulse-kit/keep.txt` lists what an update never touches), and the setup buttons: acculynx-list-schedules, start-rules, prove-it, make-map |
 
 ## Try it
 

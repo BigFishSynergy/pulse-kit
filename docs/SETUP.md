@@ -53,6 +53,7 @@ Settings, Secrets and variables, Actions. Names only here; the values are typed 
 | `ANTHROPIC_API_KEY` | secret | Optional. Monday coaching cards and the Speed Round |
 | `GOOGLE_SA_JSON` | secret | Optional. Only if goals or spend come from a Google Sheet |
 | `WINDSOR_API_KEY` | secret | Optional. Ad spend and Google reviews |
+| `KIT_TOKEN` | secret | Pulse Kit updates (step 14). A GitHub key from the owner's own account that can read the kit |
 | `RULES_REPO` | variable | Optional. Only if the rules live in a different repo |
 | `RULES_REPO_TOKEN` | secret | Optional. Read-only token for that other repo |
 
@@ -161,11 +162,14 @@ Fill in `skill-template/SKILL.md` (repo owner and name, company name) and add it
 - [ ] Each role signed in on a phone: owner, one rep, one CSR. The rep cannot open a leadership page
 - [ ] A test message and one sample daily message arrived (if messages are on)
 - [ ] Each office TV shows its slides (if they have one)
+- [ ] Pulse Kit updates: `KIT_TOKEN` saved, and Actions, **kit-updates**, Run workflow says it's up to date
 - [ ] The client knows: rules change only on github.com, by the owner; a red X in Actions emails them; the last good numbers stay up if a pull fails
 
 ## Day to day
 
 - **Ask for anything.** Anyone can tap Ask for anything at the bottom of a page. The owner hands requests to their Claude (with the setup skill), which builds them into their own copy.
+
+- **Pulse Kit updates.** When Benny improves the kit, every copy hears about it: on Mondays (or with Actions, **kit-updates**, Run workflow) the job brings the new changes over as one pull request, with a plain-words list of what's new. Nothing changes until the owner approves it (or asks their Claude to look it over and approve it); then Vercel redeploys in a minute or two. An update never touches the files in `.pulse-kit/keep.txt` (rules, settings, goals, brand, map). A file they changed themselves gets the kit's change merged in on top; one that can't be merged cleanly is left as theirs and listed for their Claude. The key it uses, `KIT_TOKEN`, is a GitHub classic token from the owner's own account (github.com, Settings, Developer settings, Personal access tokens, Tokens (classic), Generate new token: note "Pulse Kit updates", expiration 1 year, scopes **repo** and **workflow**), pasted straight into the secret. When it expires, the job's red X says so; make a new one the same way.
 
 - Data refreshes itself. To pull right away: Actions, the connector's workflow, Run workflow.
 - A failed pull keeps the last good files and emails the repo owner. A failed build keeps the last good numbers on the site, and if new rules broke it, the build runs on the last rules that worked and DMs the admin.

@@ -1,0 +1,35 @@
+name: kit-updates
+
+# Pulse Kit updates: once a week (or with the Run workflow button), bring the kit's newest changes into this copy as one
+# pull request to approve (scripts/kit_update.sh). Never touches the files in .pulse-kit/keep.txt. Nothing goes live until
+# the pull request is approved. Reads the private kit with the KIT_TOKEN secret (docs/SETUP.md step 3).
+
+on:
+  schedule:
+    - cron: "23 14 * * 1"   # Mondays, about 9 AM Central
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: kit-updates
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.repository != 'BigFishSynergy/pulse-kit'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.KIT_TOKEN || github.token }}
+      - name: Bring over the Pulse Kit's newest changes
+        env:
+          KIT_TOKEN: ${{ secrets.KIT_TOKEN }}
+          GH_TOKEN: ${{ secrets.KIT_TOKEN || github.token }}
+        run: bash scripts/kit_update.sh

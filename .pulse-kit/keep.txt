@@ -1,0 +1,12 @@
+# Files that are yours. Pulse Kit updates never change them, even when the kit's copy changes.
+# One path or folder per line. Add your own lines if there's something else you never want an update to touch.
+.pulse-kit/
+site/pulse.config.json
+site/content/
+site/public/pulse/brand/
+site/public/pulse/zips.geojson
+rules/settings.json
+rules/RULES.md
+rules/MARKETING_PHILOSOPHY.md
+connectors/csv/mapping.json
+docs/LANDING-AND-UNLOCK.md

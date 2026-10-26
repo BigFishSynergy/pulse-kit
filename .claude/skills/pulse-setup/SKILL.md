@@ -98,6 +98,8 @@ If they'd like help beyond setup (their brand, their sales process, how the busi
 
 ### 9. Go live
 
+Set up Pulse Kit updates first, so their copy gets every improvement Benny makes (`docs/SETUP.md` "Day to day" has the details): walk them through making a GitHub classic token in their own account (note "Pulse Kit updates", expiration 1 year, scopes **repo** and **workflow**) and pasting it straight into the secret `KIT_TOKEN`. They never paste it to you. Then Actions, **kit-updates**, Run workflow; it should say it's up to date.
+
 Run down the go-live list at the end of `docs/SETUP.md` with them, then tell them, warmly, that they're live, and the three things to remember: rules change only on github.com; a red X in Actions emails them and the last good numbers stay up; and they can open this chat (or a new one with this skill) any time they're stuck.
 
 ## After go-live: build what they ask for
@@ -114,6 +116,7 @@ If a request needs something the Pulse doesn't have yet (a new data source like 
 
 ## When they're stuck
 
+- **A Pulse Kit update is waiting** (a pull request called "Pulse Kit updates"): when they ask, read it, say in two or three plain sentences what it changes for them, run the checks (`npx tsc --noEmit` and `npx next build` in `site/`, the rules check if `rules/` changed), and approve and merge it if it's clean. Files it lists "for your Claude" had their own changes: bring the kit's change over by hand (the kit is `BigFishSynergy/pulse-kit`; the version they were on is in `.pulse-kit/base`), keep their changes, and push.
 - **A red X in Actions:** open the run, read the last 30 lines, explain it in one sentence, fix it or tell them the one click to make. `docs/SETUP.md` "Day to day" covers the usual ones.
 - **"Data pulled" is old:** check the last pull run. AccuLynx: is the schedule still running, did the key get deleted? CSV: when was the last upload?
 - **A number looks wrong:** never argue with it. Run **prove-it** for the dates, compare with their CRM report, and treat it like step 5.
