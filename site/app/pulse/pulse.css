@@ -1376,3 +1376,7 @@ html:has(.rr .tv.dark), body:has(.rr .tv.dark) { background: #0B0B0B; }
 .rr .myphoto-wrap { display: flex; flex-direction: column; gap: 10px; }
 .rr .myphoto-btns { display: flex; gap: 8px; flex-wrap: wrap; }
 .rr .myphoto-btns label.btn { cursor: pointer; }
+
+/* faces as rounded squares, Netflix style: avatars carry their own bold color; photos are two-tone in the same colors */
+.rr .pb-face, .rr .tv-face, .rr .pface, .rr .cl-face, .rr .photo-cell img, .rr .photo-none, .rr .myphoto img, .rr .avatar-pick img, .rr .avatar-pick button { border-radius: 22%; }
+.rr img.face { background: transparent; }

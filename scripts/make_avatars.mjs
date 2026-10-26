@@ -1,28 +1,30 @@
-// Makes the 25 avatars in site/public/pulse/avatars (Notionists by Zoish, CC0 1.0, via DiceBear). Each one has its own
-// hairstyle (long, short, curly, spiky, a top knot, head coverings), with beards, glasses and a few waves mixed in, so
-// the set covers a real range of people. Run in a folder where @dicebear/core@9.2.2 and @dicebear/collection@9.2.2 are
-// installed: node make_avatars.mjs <out folder>
+// Makes the 25 avatars in site/public/pulse/avatars: Netflix-style character heads on bold colors, in three free sets
+// that need no credit: Bottts robots (Pablo Stanley, free for personal and commercial use), Pixel Art and Thumbs
+// (DiceBear, CC0 1.0), all made with DiceBear. Run in a folder where @dicebear/core@9.2.2 and @dicebear/collection@9.2.2
+// are installed: node make_avatars.mjs <out folder>
 import { createAvatar } from "@dicebear/core";
-import { notionists } from "@dicebear/collection";
+import { bottts, pixelArt, thumbs } from "@dicebear/collection";
 import { writeFileSync } from "node:fs";
 
 const out = process.argv[2];
-const v = (n) => `variant${String(n).padStart(2, "0")}`;
-// name, hair, then optional beard, glasses, gesture
+// the same bold colors as the photo look (lib/pulse/faces.ts COLORS)
+const COLORS = ["E50914", "0071EB", "F5C518", "46D369", "9B5DE5", "FF7A00", "00B8D9", "FF4FA3"];
 const SET = [
-  ["ace", 1, 3], ["blaze", 2, 0, 4], ["comet", 8], ["dash", 9, 7], ["echo", 10, 0, 0, "wavePointLongArms"],
-  ["flint", 14, 0, 2], ["gale", 20, 10], ["hawk", 23], ["iris", 26, 0, 9], ["jett", 28, 0, 0, "ok"],
-  ["knox", 36], ["luna", 39, 0, 6], ["maverick", 41], ["nova", 42, 5], ["onyx", 45, 0, 0, "waveLongArms"],
-  ["pike", 46, 0, 1], ["quinn", 47], ["ridge", 50, 0, 11], ["sage", 51, 2], ["titan", 57, 0, 0, "point"],
-  ["ursa", 58, 0, 8], ["vale", 59], ["wren", 60, 12, 3], ["xena", 61], ["zeke", 63, 0, 0, "hand"],
+  ["bolt", bottts], ["sprocket", bottts], ["gizmo", bottts], ["rivet", bottts], ["servo", bottts], ["turbo", bottts], ["chip", bottts], ["widget", bottts], ["zap", bottts],
+  ["byte", pixelArt], ["arcade", pixelArt], ["retro", pixelArt], ["glitch", pixelArt], ["joy", pixelArt], ["level", pixelArt], ["combo", pixelArt], ["boss", pixelArt],
+  ["mochi", thumbs], ["bean", thumbs], ["gummy", thumbs], ["puff", thumbs], ["jelly", thumbs], ["boo", thumbs], ["dot", thumbs], ["blip", thumbs],
 ];
-for (const [name, hair, beard, glasses, gesture] of SET) {
-  const svg = createAvatar(notionists, {
-    seed: name, size: 256, hair: [v(hair)],
-    beard: beard ? [v(beard)] : undefined, beardProbability: beard ? 100 : 0,
-    glasses: glasses ? [v(glasses)] : undefined, glassesProbability: glasses ? 100 : 0,
-    gesture: gesture ? [gesture] : undefined, gestureProbability: gesture ? 100 : 0,
-  }).toString();
-  writeFileSync(`${out}/${name}.svg`, svg);
-}
+SET.forEach(([name, style], i) => {
+  writeFileSync(`${out}/${name}.svg`, createAvatar(style, { seed: name, size: 256, backgroundColor: [COLORS[(i * 3) % COLORS.length]] }).toString());
+});
 writeFileSync(`${out}/index.json`, JSON.stringify(SET.map((x) => x[0])));
+writeFileSync(`${out}/LICENSE.md`, `# Avatars
+
+The 25 avatars in this folder were made with DiceBear (https://www.dicebear.com) from three sets that are free to use for any purpose, including commercial, with no credit required:
+
+- Bottts by Pablo Stanley (https://bottts.com): free for personal and commercial use.
+- Pixel Art by DiceBear: CC0 1.0 (public domain).
+- Thumbs by DiceBear: CC0 1.0 (public domain).
+
+Remade with scripts/make_avatars.mjs in the Pulse Kit.
+`);

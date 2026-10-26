@@ -1,15 +1,16 @@
 "use client";
 import { useState } from "react";
 import { deletePhoto, pickAvatar, uploadPhoto } from "@/app/pulse/people-actions";
-import { faceSrc, type Face } from "@/lib/pulse/faces";
+import { colorFor, faceSrc, type Face } from "@/lib/pulse/faces";
 import AvatarPicker from "./AvatarPicker";
 
-// Team photos on the People page: a photo (the browser crops it square, shrinks it and turns it black and white, so every
-// face on the board matches) or one of the 25 avatars.
+// Team photos on the People page: a photo (the browser crops it square, shrinks it and makes it a colorful two-tone
+// picture, so every face on the board matches) or one of the 25 avatars.
 type Person = { name: string; slug: string; v?: Face };
 
-/** A square, black and white JPEG of the photo, cropped a little above center where faces usually are. */
-export async function squareJpeg(file: File, size = 480): Promise<string> {
+/** A square two-tone JPEG of the photo in one bold color (dark parts deep, light parts bright), cropped a little above
+ * center where faces usually are. Every photo gets the same look, so the board matches the avatars. */
+export async function squareJpeg(file: File, color: string, size = 480): Promise<string> {
   const url = URL.createObjectURL(file);
   try {
     const img = await new Promise<HTMLImageElement>((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = url; });
@@ -19,13 +20,15 @@ export async function squareJpeg(file: File, size = 480): Promise<string> {
     const g = c.getContext("2d")!;
     g.drawImage(img, (img.width - s) / 2, Math.max(0, (img.height - s) * 0.3), s, s, 0, 0, size, size);
     const d = g.getImageData(0, 0, size, size), p = d.data;
+    const hex = parseInt(color.slice(1), 16), C = [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
+    const dark = C.map((x) => x * 0.18), light = C.map((x) => x + (255 - x) * 0.72);
     for (let i = 0; i < p.length; i += 4) {
-      const y = 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2];
-      const v = Math.max(0, Math.min(255, (y - 128) * 1.12 + 128)); // a touch more contrast
-      p[i] = p[i + 1] = p[i + 2] = v;
+      let t = (0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2]) / 255;
+      t = Math.max(0, Math.min(1, (t - 0.5) * 1.25 + 0.5)); // a touch more contrast
+      for (let k = 0; k < 3; k++) p[i + k] = dark[k] + (light[k] - dark[k]) * t;
     }
     g.putImageData(d, 0, 0);
-    return c.toDataURL("image/jpeg", 0.82);
+    return c.toDataURL("image/jpeg", 0.85);
   } finally {
     URL.revokeObjectURL(url);
   }
@@ -41,7 +44,7 @@ export default function TeamPhotos({ people }: { people: Person[] }) {
     if (!f) return;
     setMsg("Saving...");
     try {
-      const r = await uploadPhoto(slug, await squareJpeg(f));
+      const r = await uploadPhoto(slug, await squareJpeg(f, colorFor(slug)));
       setMsg(r.error ?? r.done ?? "");
       if (!r.error) setV((x) => ({ ...x, [slug]: Date.now() }));
     } catch {
@@ -50,7 +53,7 @@ export default function TeamPhotos({ people }: { people: Person[] }) {
   }
   return (
     <section>
-      <h2>Team photos <small>A photo (turned black and white so the board matches) or one of 25 avatars, for the POWER cards. Reps and CSRs can also set their own. Only use photos people are happy to have on the office TV.</small></h2>
+      <h2>Team photos <small>A photo (it becomes a colorful two-tone picture so the board matches) or one of 25 avatars, for the POWER cards. Reps and CSRs can also set their own. Only use photos people are happy to have on the office TV.</small></h2>
       <div className="photo-grid">
         {people.map((p) => {
           const src = faceSrc(p.slug, v[p.slug]);
