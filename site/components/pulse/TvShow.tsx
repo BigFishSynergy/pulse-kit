@@ -19,7 +19,7 @@ function Cards({ cards, tv }: { cards: any[]; tv: string }) {
     <article key={c.name} className={`tv-card ${c.rank === 1 ? "first" : ""}`}>
       <div className="tv-card-top">
         <span className="tv-card-rank">#{c.rank}</span>
-        {c.photo ? (
+        {c.faces === false ? null : c.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img className="tv-face face" src={faceSrc(c.slug, c.photo, tv) ?? ""} alt="" />
         ) : <span className="tv-face none">{initials(c.name)}</span>}

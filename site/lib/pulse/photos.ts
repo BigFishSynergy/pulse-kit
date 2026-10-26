@@ -24,6 +24,15 @@ export async function photoIndex(): Promise<Record<string, number | string>> {
   }
 }
 
+/** The faces switch on the People page: the admin can turn faces off for the whole Pulse, TV screens included. Every photo
+ * and avatar is kept, so turning faces back on brings them all back. On unless someone turned it off. */
+export const facesOn = (ix: Record<string, number | string>) => ix._faces !== "off";
+export async function setFaces(on: boolean) {
+  const ix = await photoIndex();
+  if (on) delete ix._faces; else ix._faces = "off";
+  await saveIndex(ix);
+}
+
 async function saveIndex(ix: Record<string, number | string>) {
   const body = JSON.stringify(ix);
   if (useBlob()) await put(INDEX, body, { access: "private", allowOverwrite: true, addRandomSuffix: false, contentType: "application/json", cacheControlMaxAge: 60 });

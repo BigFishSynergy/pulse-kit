@@ -14,7 +14,7 @@ import { dfmt } from "@/lib/pulse/format";
 import TipCard from "@/components/pulse/TipCard";
 import { supportLinks, tipFrom } from "@/lib/pulse/support";
 import { pageOn } from "@/lib/pulse/config";
-import { photoIndex } from "@/lib/pulse/photos";
+import { facesOn, photoIndex } from "@/lib/pulse/photos";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +40,7 @@ export default async function Pulse({ searchParams }: { searchParams: { week?: s
       <ArchiveNote week={week} back="/pulse/hq/pulse" />
       {tip && !week && !me.view ? <TipCard tip={tip} week={meta?.week_start ?? ""} {...supportLinks()} /> : null}
       {s && look === "clean" ? (
-        <CleanPulse s={s} coaching={coaching} repSlugs={repSlugs} photos={photos} canAsk={!me.view && !!process.env.ANTHROPIC_API_KEY} week={week ?? ""} first={me.name.split(" ")[0]} />
+        <CleanPulse s={s} coaching={coaching} repSlugs={repSlugs} photos={photos} faces={facesOn(photos)} canAsk={!me.view && !!process.env.ANTHROPIC_API_KEY} week={week ?? ""} first={me.name.split(" ")[0]} />
       ) : s ? (
         <PulseView s={s} coaching={coaching} repSlugs={repSlugs} canAsk={!me.view && !!process.env.ANTHROPIC_API_KEY} week={week ?? ""} first={me.name.split(" ")[0]} />
       ) : (

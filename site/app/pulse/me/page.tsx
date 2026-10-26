@@ -7,7 +7,7 @@ import LookToggle from "@/components/pulse/LookToggle";
 import { getLook } from "@/lib/pulse/look";
 import Footer from "@/components/pulse/Footer";
 import MyPhoto from "@/components/pulse/MyPhoto";
-import { photoIndex } from "@/lib/pulse/photos";
+import { facesOn, photoIndex } from "@/lib/pulse/photos";
 import { repNav } from "@/components/pulse/nav";
 import { adminFirst, CO, CRM } from "@/lib/pulse/config";
 
@@ -16,6 +16,7 @@ export const dynamic = "force-dynamic";
 // A rep's own screen. The server reads only this rep's file and this rep's coaching card.
 export default async function MyPulse() {
   const s = (await requireRep());
+  const ix = await photoIndex();
   const look = getLook();
   const [meta, rep] = await Promise.all([getMeta(), getRep(s.rep)]);
   const coaching = meta ? await getCoaching(meta.week_start) : null;
@@ -31,7 +32,7 @@ export default async function MyPulse() {
       ) : (
         <div className="state"><h2>Your numbers are on the way</h2><p className="sub">They show up after the next hourly data pull. If this stays empty, let {adminFirst()} know.</p></div>
       )}
-      {!s.view ? <MyPhoto slug={s.rep} name={s.name} v={(await photoIndex())[s.rep]} /> : null}
+      {!s.view && facesOn(ix) ? <MyPhoto slug={s.rep} name={s.name} v={ix[s.rep]} /> : null}
       <Footer />
     </div>
   );

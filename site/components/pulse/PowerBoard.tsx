@@ -16,13 +16,13 @@ function Face({ src, name, big }: { src?: string | null; name: string; big?: boo
   return src ? <img className={`pb-face${big ? " big" : ""}`} src={src} alt="" /> : <span className={`pb-face none${big ? " big" : ""}`}>{initials(name)}</span>;
 }
 
-function Card({ r, c, place, temp, href, photo }: { r: any; c: any; place: number; temp?: any; href: string; photo?: string | null }) {
+function Card({ r, c, place, temp, href, photo, faces }: { r: any; c: any; place: number; temp?: any; href: string; photo?: string | null; faces: boolean }) {
   const top = place <= 3;
   return (
     <Link href={href} className={`pb-card${top ? " top" : ""} p${place}`}>
       <div className="pb-head">
         <span className="pb-place">{place}</span>
-        <Face src={photo} name={r.rep} big={top} />
+        {faces ? <Face src={photo} name={r.rep} big={top} /> : <span />}
         <div className="pb-power"><b className="num">{c.power}</b><small>POWER</small></div>
       </div>
       <div className="pb-name"><span>{r.rep}</span>{temp ? <MeterBadge level={temp.level} sold={temp.sold} small /> : null}</div>
@@ -41,17 +41,17 @@ function Card({ r, c, place, temp, href, photo }: { r: any; c: any; place: numbe
   );
 }
 
-export default function PowerBoard({ team, power, temp, coming, href, photo }: {
+export default function PowerBoard({ team, power, temp, coming, href, photo, faces = true }: {
   team: any[]; power: Record<string, any>; temp: Record<string, any>; coming: Set<unknown>;
-  href: (rep: string) => string; photo: (rep: string) => string | null;
+  href: (rep: string) => string; photo: (rep: string) => string | null; faces?: boolean;
 }) {
   const ranked = team.filter((r) => power[r.rep]);
   const rest = team.filter((r) => !power[r.rep]);
   const extra = ranked.slice(9);
   return (
     <div className="pb">
-      <div className="pb-podium">{ranked.slice(0, 3).map((r, i) => <Card key={r.rep} r={r} c={power[r.rep]} place={i + 1} temp={temp[r.rep]} href={href(r.rep)} photo={photo(r.rep)} />)}</div>
-      {ranked.length > 3 ? <div className="pb-grid">{ranked.slice(3, 9).map((r, i) => <Card key={r.rep} r={r} c={power[r.rep]} place={i + 4} temp={temp[r.rep]} href={href(r.rep)} photo={photo(r.rep)} />)}</div> : null}
+      <div className="pb-podium">{ranked.slice(0, 3).map((r, i) => <Card key={r.rep} r={r} c={power[r.rep]} place={i + 1} temp={temp[r.rep]} href={href(r.rep)} photo={photo(r.rep)} faces={faces} />)}</div>
+      {ranked.length > 3 ? <div className="pb-grid">{ranked.slice(3, 9).map((r, i) => <Card key={r.rep} r={r} c={power[r.rep]} place={i + 4} temp={temp[r.rep]} href={href(r.rep)} photo={photo(r.rep)} faces={faces} />)}</div> : null}
       {extra.length || rest.length ? (
         <p className="pb-more sub">
           {extra.length ? <>Also ranked: {extra.map((r, i) => <span key={r.rep}>{i ? ", " : ""}<Link href={href(r.rep)}>{r.rep}</Link> {power[r.rep].power}</span>)}. </> : null}

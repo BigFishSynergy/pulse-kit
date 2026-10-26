@@ -1380,3 +1380,10 @@ html:has(.rr .tv.dark), body:has(.rr .tv.dark) { background: #0B0B0B; }
 /* faces as rounded squares, Netflix style: avatars carry their own bold color; photos are two-tone in the same colors */
 .rr .pb-face, .rr .tv-face, .rr .pface, .rr .cl-face, .rr .photo-cell img, .rr .photo-none, .rr .myphoto img, .rr .avatar-pick img, .rr .avatar-pick button { border-radius: 22%; }
 .rr img.face { background: transparent; }
+
+/* the faces switch on the People page */
+.rr .faces-switch { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 4px 0 16px; }
+.rr .switch { width: 48px; height: 28px; border-radius: 14px; border: 0; padding: 3px; background: var(--line-strong); cursor: pointer; display: inline-flex; transition: background .15s; }
+.rr .switch i { width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+.rr .switch.on { background: #2E7D32; }
+.rr .switch.on i { transform: translateX(20px); }

@@ -186,3 +186,12 @@ export async function pickMyAvatar(name: string): Promise<PeopleState> {
   revalidatePath(s!.role === "csr" ? "/pulse/csr" : "/pulse/me");
   return { done: "Nice pick. It's on your card now." };
 }
+
+/** The admin turns faces on or off for the whole Pulse, TV screens included. Nothing is deleted either way. */
+export async function showFaces(on: boolean): Promise<PeopleState> {
+  try { await requireAdmin(); } catch (e) { return { error: (e as Error).message }; }
+  const { setFaces } = await import("@/lib/pulse/photos");
+  await setFaces(on);
+  for (const p of ["/pulse/hq/people", "/pulse/hq/team", "/pulse/hq/pulse", "/pulse/me", "/pulse/csr"]) revalidatePath(p);
+  return { done: on ? "Faces are on." : "Faces are off." };
+}

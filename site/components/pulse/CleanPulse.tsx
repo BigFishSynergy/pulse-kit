@@ -84,7 +84,7 @@ function WeekBars({ trend }: { trend: any[] }) {
   );
 }
 
-export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first, photos = {} }: { s: any; coaching: any; repSlugs: Record<string, string>; canAsk: boolean; week: string; first: string; photos?: Record<string, number | string> }) {
+export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first, photos = {}, faces = true }: { s: any; coaching: any; repSlugs: Record<string, string>; canAsk: boolean; week: string; first: string; photos?: Record<string, number | string>; faces?: boolean }) {
   const [per, setPer] = usePersist("cleanPer", "month", PER.map((p) => p[0]));
   const [q, setQ] = useState("");
   const b = s.board;
@@ -147,7 +147,7 @@ export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first,
       <section className="cl-panel">
         <div className="cl-panel-h"><span className="cl-k">Power rankings</span><Win>last 90 days</Win><span className="sub">Highest POWER first. POWER covers the last 90 days and is built from the six skills on each card (the tick on each bar is the team average). The line at the bottom is the last 30 days. Tap a card for that rep&apos;s screen.</span></div>
         <PowerBoard team={team} power={power} temp={temp} coming={coming} href={(rep) => (repSlugs[rep] ? q2(rep) : "#")}
-          photo={(rep) => (repSlugs[rep] ? faceSrc(repSlugs[rep], photos[repSlugs[rep]]) : null)} />
+          faces={faces} photo={(rep) => (repSlugs[rep] ? faceSrc(repSlugs[rep], photos[repSlugs[rep]]) : null)} />
       </section>
 
       <CsrTeam cc={s.csr_cards} />

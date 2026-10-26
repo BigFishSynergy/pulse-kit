@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { deletePhoto, pickAvatar, uploadPhoto } from "@/app/pulse/people-actions";
+import { deletePhoto, pickAvatar, showFaces, uploadPhoto } from "@/app/pulse/people-actions";
 import { colorFor, faceSrc, type Face } from "@/lib/pulse/faces";
 import AvatarPicker from "./AvatarPicker";
 
@@ -36,8 +36,9 @@ export async function squareJpeg(file: File, color: string, size = 480): Promise
 
 const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2);
 
-export default function TeamPhotos({ people }: { people: Person[] }) {
+export default function TeamPhotos({ people, on: on0 }: { people: Person[]; on: boolean }) {
   const [msg, setMsg] = useState("");
+  const [on, setOn] = useState(on0);
   const [open, setOpen] = useState("");
   const [v, setV] = useState<Record<string, Face>>(Object.fromEntries(people.map((p) => [p.slug, p.v])));
   async function pick(slug: string, f?: File) {
@@ -53,7 +54,14 @@ export default function TeamPhotos({ people }: { people: Person[] }) {
   }
   return (
     <section>
-      <h2>Team photos <small>A photo (it becomes a colorful two-tone picture so the board matches) or one of 25 avatars, for the POWER cards. Reps and CSRs can also set their own. Only use photos people are happy to have on the office TV.</small></h2>
+      <h2>Team faces <small>A photo (it becomes a colorful two-tone picture so the board matches) or one of 25 avatars, for the POWER cards. Reps and CSRs can also set their own. Only use photos people are happy to have on the office TV.</small></h2>
+      <div className="faces-switch">
+        <span className="m">Faces on the Pulse</span>
+        <button type="button" role="switch" aria-checked={on} className={`switch${on ? " on" : ""}`}
+          onClick={async () => { const r = await showFaces(!on); setMsg(r.error ?? r.done ?? ""); if (!r.error) setOn(!on); }}><i /></button>
+        <span className="sub">{on ? "On: faces show on the power rankings, player cards and TV screens, and reps and CSRs can set their own." : "Off: no faces anywhere on the Pulse. Every photo and avatar is kept, so turning this back on brings them all back."}</span>
+      </div>
+      {on ? <>
       <div className="photo-grid">
         {people.map((p) => {
           const src = faceSrc(p.slug, v[p.slug]);
@@ -75,6 +83,7 @@ export default function TeamPhotos({ people }: { people: Person[] }) {
           <AvatarPicker current={typeof v[open] === "string" ? (v[open] as string) : null} onPick={async (a) => { const r = await pickAvatar(open, a); setMsg(r.error ?? r.done ?? ""); if (!r.error) { setV((x) => ({ ...x, [open]: `avatar:${a}` })); setOpen(""); } }} />
         </div>
       ) : null}
+      </> : null}
       {msg ? <p className="sub" role="status">{msg}</p> : null}
     </section>
   );

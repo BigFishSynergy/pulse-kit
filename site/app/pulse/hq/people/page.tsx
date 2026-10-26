@@ -6,7 +6,7 @@ import Header from "@/components/pulse/Header";
 import Footer from "@/components/pulse/Footer";
 import PeopleAdmin from "@/components/pulse/PeopleAdmin";
 import TeamPhotos from "@/components/pulse/TeamPhotos";
-import { photoIndex } from "@/lib/pulse/photos";
+import { facesOn, photoIndex } from "@/lib/pulse/photos";
 import { leadNav } from "@/components/pulse/nav";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +32,7 @@ export default async function People({ searchParams }: { searchParams: { welcome
         reps={roster.map((r) => ({ name: r.rep, slug: r.slug }))}
         csrs={csrs.map((n) => ({ name: n, slug: slug(n) }))}
       />
-      <TeamPhotos people={[...roster.map((r) => ({ name: r.rep, slug: r.slug })), ...csrs.map((n) => ({ name: n, slug: slug(n) }))].map((x) => ({ ...x, v: photos[x.slug] }))} />
+      <TeamPhotos on={facesOn(photos)} people={[...roster.map((r) => ({ name: r.rep, slug: r.slug })), ...csrs.map((n) => ({ name: n, slug: slug(n) }))].map((x) => ({ ...x, v: photos[x.slug] }))} />
       <Footer />
     </div>
   );
