@@ -127,6 +127,7 @@ In the client's own Vercel account:
 
 1. Open `https://<their site>/pulse`. A brand new Pulse goes straight to the Welcome page: the setup code from step 10, the admin's name and a password. That makes the admin login (`people.admin` in `pulse.config.json`). The page stops working once any login exists.
 2. In the menu, **People**: add each person, pick their role and whose numbers they see, and send each person their own sign-in link directly (by text, to them only). Links and passwords show once; **New link** or **New password** makes another, and **Remove** signs someone out right away.
+3. With Slack or email messages (step 12), the Pulse sends the links itself. Put each person's Slack member ID (in Slack: their profile, ⋮ More, Copy member ID) or email address on their row and press **Save**. Then **Send link** sends that person their own link, to them only, and **Send their link to everyone who hasn't been on the Pulse yet** does the whole team at once. **Last on** shows who has never signed in. Anyone who loses their link types their name under **Lost your sign-in link?** on the sign-in page and gets it back the same way (once per 10 minutes at most, and the page never says whether a name has a login). Google Chat and Teams can only post to a space, so with those the admin keeps handing links over in person.
 
 Roles: a **rep** sees only their own numbers plus the team's leaderboard tops. A **CSR** sees only their own CSR screen (a CSR shows up after 20 appointments in 90 days). **Leadership** sees everything. A rep who guesses a leadership address gets a plain 404. Logins are stored in their private Blob store, passwords only as one-way codes. (The older `site/users.mjs` command-line tool still works for anyone who prefers it.)
 
@@ -143,7 +144,7 @@ The Pulse sends a short daily message, each new request, and the admin's notices
 
 `admin` is where the admin's own notices go (with Slack, a DM). Webhook addresses and the mailbox password are secrets: anyone who has one can post as the Pulse, so they only ever go in Vercel. Then the admin signs in, opens **Post a message** (in the menu), sends a test, and sends themselves a sample of each daily message.
 
-Only the live site sends. A channel only gets the admin's own words, the daily messages, and new requests. No customer names in any message.
+Only the live site sends. A channel only gets the admin's own words, the daily messages, and new requests. No customer names in any message. The only message that goes to one person (besides the admin's notices) is their own sign-in link, when they or the admin ask for it (step 11).
 
 ## 12b. TV screens (optional)
 

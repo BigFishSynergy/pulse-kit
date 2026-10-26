@@ -16,6 +16,8 @@ import { CONFIG } from "./config";
 // own words from the Post a message page, the daily messages, or each new Pulse request, word for word (phones and emails
 // masked). Only the live site sends: previews and local development send nothing. Messages carry no customer names,
 // phones, emails or addresses (jobs by job number only).
+// One more kind of message goes to one person only: their own sign-in link, to the Slack member ID or email address on
+// their login, when they ask for it on a sign-in page or the admin presses Send link on the People page (sendlink.ts).
 
 export type Service = "slack" | "google_chat" | "teams" | "email" | "none";
 export const SERVICE: Service = ((CONFIG.slack as { service?: Service }).service ?? "slack") as Service;
@@ -148,3 +150,26 @@ export async function dmAdmin(text: string, blocks?: SlackBlock[]): Promise<bool
 
 /** Post to a place. Only for what the admin approved: their own words on the Post a message page, the daily messages, or new Pulse requests. */
 export const postApproved = (to: PulseSlackChannel, text: string, blocks?: SlackBlock[]) => send(PULSE_SLACK_CHANNELS[to]?.id ?? "", text, blocks);
+
+// ---------- one person's own sign-in link ----------
+
+/** Services that can reach one person: Slack (a DM to their member ID) and email (their own address). Google Chat and
+ * Teams webhooks only post to a space, so with those the Pulse can't send anyone their link. */
+export const PERSONAL = SERVICE === "slack" || SERVICE === "email";
+/** "in Slack" or "by email", for the Send my link buttons, and where to look for it. */
+export const WAY = SERVICE === "email" ? "by email" : "in Slack";
+export const INBOX = SERVICE === "email" ? "in your email" : "in Slack";
+/** What the People page asks for to reach someone (PulseUser.dm). */
+export const DM_LABEL = SERVICE === "email" ? "Email" : "Slack member ID";
+export const DM_WORD = SERVICE === "email" ? "email address" : "Slack member ID";
+
+/** A tidy Slack member ID or email address, "" for blank, or null when it isn't one. One address, never a list. */
+export function cleanDm(v: string): string | null {
+  const t = v.trim();
+  if (!t) return "";
+  if (SERVICE === "email") return /^[^\s@;,<>]+@[^\s@;,<>]+\.[a-z]{2,}$/i.test(t) ? t.toLowerCase() : null;
+  return /^[UW][A-Z0-9]{6,15}$/.test(t.toUpperCase()) ? t.toUpperCase() : null;
+}
+
+/** Send one person a message of their own. Only ever their own sign-in link (lib/pulse/sendlink.ts). */
+export const dmPerson = (to: string, text: string) => send(to, text);

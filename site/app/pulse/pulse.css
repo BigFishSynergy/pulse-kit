@@ -309,6 +309,11 @@ html:has(.rr[data-theme="dark"]), body:has(.rr[data-theme="dark"]) { background:
 .rr .login form { display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--line-strong); padding-top: 18px; }
 .rr .login label { font: 600 13px var(--text); color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
 .rr .login .err { color: var(--bad); font-size: 14px; }
+.rr .login form.getlink { gap: 10px; }
+.rr table.people td.never { color: var(--bad); font-weight: 600; }
+.rr table.people form.dm { display: flex; gap: 6px; align-items: center; }
+.rr table.people form.dm input { width: 150px; }
+.rr form.sendnew { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin: 6px 0 12px; }
 /* a sign-in link with its Copy button ("You're signed in", and My sign-in link in the menu) */
 .rr .copylink { display: flex; gap: 8px; align-items: stretch; }
 .rr .copylink input[type="text"] { flex: 1; min-width: 0; font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; padding: 8px 10px; }

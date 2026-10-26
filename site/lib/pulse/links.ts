@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { headers } from "next/headers";
 import { get, put } from "@vercel/blob";
-import { linkOnDevice, openLink, type Session } from "./auth";
+import { linkOnDevice, openLink, type PulseUser, type Session } from "./auth";
 import { CO } from "./config";
 
 // Each person's own sign-in link, kept sealed (lib/pulse/auth.ts) from the last time they tapped it, so "My sign-in link"
@@ -47,6 +47,11 @@ async function linkCopy(u: string): Promise<string | null> {
 /** The signed-in person's own working link token: this device's first, then their saved copy. Null if neither works. */
 export async function myLinkToken(s: Session): Promise<string | null> {
   return await linkOnDevice(s) ?? await openLink(await linkCopy(s.u), s);
+}
+
+/** Someone's saved working link token, for sending it to them (lib/pulse/sendlink.ts). Null if none works. */
+export async function savedLinkFor(u: PulseUser): Promise<string | null> {
+  return openLink(await linkCopy(u.u), { u: u.u, name: u.name, role: u.role });
 }
 
 /** The site's address: pulse.config.json company.site_url live (the address users.mjs prints), the visitor's own when testing. */

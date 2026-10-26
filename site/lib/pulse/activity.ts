@@ -60,6 +60,23 @@ export async function record(s: Session | null, kind: Kind, detail?: string) {
   } catch {}
 }
 
+/** The last day (Eastern) each login was on the Pulse, from the log's file names alone. For the People page. */
+export async function lastSeenDays(): Promise<Record<string, string>> {
+  const seen: Record<string, string> = {};
+  let cursor: string | undefined;
+  try {
+    do {
+      const page = await list({ prefix: PREFIX, cursor, limit: 1000 });
+      for (const b of page.blobs) {
+        const m = b.pathname.slice(PREFIX.length).match(/^(\d{4}-\d{2}-\d{2})\/([^/]+)\.json$/);
+        if (m && (!seen[m[2]] || m[1] > seen[m[2]])) seen[m[2]] = m[1];
+      }
+      cursor = page.hasMore ? page.cursor : undefined;
+    } while (cursor);
+  } catch {}
+  return seen;
+}
+
 /** Every person's daily logs between two Eastern dates, both included. */
 export async function logsBetween(from: string, to: string): Promise<DayLog[]> {
   const paths: string[] = [];
