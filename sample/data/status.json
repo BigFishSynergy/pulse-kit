@@ -3,7 +3,7 @@
     "runDate": "2026-10-25T13:05:00",
     "schedule": "Sample",
     "pulledAt": "2026-10-25T13:05:00Z",
-    "rows": 9612,
+    "rows": 9685,
     "file": "data/job_export_raw_latest.csv"
   },
   "revenue_in_progress": {

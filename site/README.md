@@ -6,7 +6,7 @@ Next.js 14, deployed on the client's own Vercel with **Root Directory `site`**. 
 |---|---|---|
 | Sales reps | `/pulse` (login), `/pulse/me`, `/pulse/me/reports`, `/pulse/me/game`, `/pulse/me/ask` (when `PULSE_ASK_REPS=on`) | Only their own numbers, map, open quotes, coaching card, player card and meter, plus the team's leaderboard tops |
 | CSRs | `/pulse` (login), `/pulse/csr`, `/pulse/me/game` | Only their own CSR screen, plus the sales team's tops and totals |
-| Leadership | `/pulse/hq` (login), `/pulse/hq/*` | Everything: Pulse, Scorecard, Reports, Moneyball, Map, Team (POWER, player cards, hot and cold), Production, Job costing, Marketing, Speed Round, Ask Claude, Requests, Activity, any rep's or CSR's screen, and Post to Slack for the admin |
+| Leadership | `/pulse/hq` (login), `/pulse/hq/*` | Everything: Pulse, Scorecard, Reports, Moneyball, Map, Team (POWER, player cards, hot and cold), Production, Job costing, Marketing, Speed Round, Ask Claude, Requests, Activity, any rep's or CSR's screen, and, for the admin, People, TV screens and Post a message |
 
 The server only ever sends each person the files their role may see. A rep who guesses a leadership address gets a plain 404, and so does anyone opening a page switched off in `pulse.config.json`.
 

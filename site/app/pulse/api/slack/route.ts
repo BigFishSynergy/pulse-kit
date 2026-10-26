@@ -2,7 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getSession, isAdmin } from "@/lib/pulse/auth";
 import { CO } from "@/lib/pulse/config";
 import { buildDaily, DAILY, isDayKey, readSettings, writeSettings } from "@/lib/pulse/daily";
-import { dmAdmin, isPulseSlackChannel, postApproved, PULSE_SLACK_CHANNELS, slackConnected, slackReady } from "@/lib/pulse/slack";
+import { dmAdmin, isPulseSlackChannel, postApproved, PULSE_SLACK_CHANNELS, SERVICE, SERVICE_NAME, slackConnected, slackReady } from "@/lib/pulse/slack";
+const SVC = SERVICE_NAME[SERVICE];
 import { pageOn } from "@/lib/pulse/config";
 
 // The company's Pulse Slack app (lib/pulse/slack.ts). The admin only.
@@ -18,8 +19,8 @@ export const dynamic = "force-dynamic";
 const WHY: Record<string, string> = {
   not_in_channel: "The Pulse app is not in that channel. Add it in the channel's settings (Agents & apps).",
   channel_not_found: "Slack cannot find that channel for the app. Add the app in the channel's settings.",
-  not_configured: "Slack is not set up yet: the app's token or your member ID is missing.",
-  not_live_site: "Only the live site sends to Slack.",
+  not_configured: `${SVC} is not set up yet: its settings are missing in Vercel.`,
+  not_live_site: "Only the live site sends messages.",
   invalid_auth: "Slack did not accept the app's token. It may need a new one.",
   account_inactive: "Slack did not accept the app's token. It may need a new one.",
 };
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
     try { msg = await buildDaily(day); } catch (e) { return NextResponse.json({ error: `Could not build ${info.title}: ${(e as Error).message}` }, { status: 500 }); }
     if (b.action === "daily.sample") {
       const sent = await dmAdmin(msg.text, msg.blocks);
-      if (!sent) return NextResponse.json({ error: "Slack did not take the sample.", preview: process.env.VERCEL ? undefined : msg }, { status: 502 });
+      if (!sent) return NextResponse.json({ error: `${SVC} did not take the sample.`, preview: process.env.VERCEL ? undefined : msg }, { status: 502 });
       settings[day].sampledAt = new Date().toISOString();
       await writeSettings(settings);
       return NextResponse.json({ ok: true, settings });
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
     if (b.action === "daily.post") {
       const rs = await Promise.all(info.to.map((to) => postApproved(to, msg.text, msg.blocks)));
       const bad = rs.find((r) => !r.ok);
-      if (bad && !bad.ok) return NextResponse.json({ error: WHY[bad.reason] ?? `Slack did not take it (${bad.reason}).` }, { status: 502 });
+      if (bad && !bad.ok) return NextResponse.json({ error: WHY[bad.reason] ?? `${SVC} did not take it (${bad.reason}).` }, { status: 502 });
       settings[day].lastPosted = new Date().toISOString();
       await writeSettings(settings);
       return NextResponse.json({ ok: true, settings });
@@ -65,12 +66,12 @@ export async function POST(req: NextRequest) {
   if (b.action === "post") {
     const text = typeof b.text === "string" ? b.text.trim() : "";
     if (!text || text.length > 3500) return NextResponse.json({ error: "Write the message first (up to 3,500 characters)." }, { status: 400 });
-    if (b.to === "me") return (await dmAdmin(text)) ? NextResponse.json({ ok: true, to: "your DMs" }) : NextResponse.json({ error: "Slack did not take it." }, { status: 502 });
+    if (b.to === "me") return (await dmAdmin(text)) ? NextResponse.json({ ok: true, to: "your DMs" }) : NextResponse.json({ error: `${SVC} did not take it.` }, { status: 502 });
     if (!isPulseSlackChannel(b.to)) return NextResponse.json({ error: "Pick where it goes." }, { status: 400 });
     const r = await postApproved(b.to, text);
     return r.ok ? NextResponse.json({ ok: true, to: PULSE_SLACK_CHANNELS[b.to].name })
-      : NextResponse.json({ error: WHY[r.reason] ?? `Slack did not take it (${r.reason}).` }, { status: 502 });
+      : NextResponse.json({ error: WHY[r.reason] ?? `${SVC} did not take it (${r.reason}).` }, { status: 502 });
   }
-  const sent = await dmAdmin(`:white_check_mark: Test from the ${CO.pulse_name}. Slack DMs from the site are working.`);
-  return sent ? NextResponse.json({ ok: true }) : NextResponse.json({ error: "Slack did not take it. Check the Vercel logs for Slack's reason." }, { status: 502 });
+  const sent = await dmAdmin(`:white_check_mark: Test from the ${CO.pulse_name}. Messages from the site are working.`);
+  return sent ? NextResponse.json({ ok: true }) : NextResponse.json({ error: `${SVC} did not take it. Check the Vercel logs for the reason.` }, { status: 502 });
 }

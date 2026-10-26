@@ -174,7 +174,7 @@ Your answer:
 
 ## 13. Your Pulse
 
-- Pages on or off: Scorecard, Reports, Moneyball, Map, Team and POWER, Production, Job costing, Marketing, CSR screens, Speed Round, Ask Claude, Make a graphic, Requests, Slack posts.
+- Pages on or off: Scorecard, Reports, Moneyball, Map, Team and POWER, Production, Job costing, Marketing, CSR screens, Speed Round, Ask Claude, Make a graphic, Requests, daily messages.
 - Your service area: the zips you serve, the town for each, and the counties or regions you group them by.
 - Speed Round: what should the weekly quiz teach? Your core values, your sales process, the products you install.
 - Your logo and brand colors.

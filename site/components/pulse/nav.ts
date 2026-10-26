@@ -5,7 +5,7 @@ import { pageOn, type PageKey } from "@/lib/pulse/config";
 
 export type NavItem = { href: string; label: string; current?: boolean; main?: boolean };
 
-export type LeadPage = "pulse" | "reports" | "rep" | "ask" | "moneyball" | "game" | "requests" | "activity" | "slack" | "people"
+export type LeadPage = "pulse" | "reports" | "rep" | "ask" | "moneyball" | "game" | "requests" | "activity" | "slack" | "people" | "tv"
   | "map" | "team" | "production" | "costs" | "marketing" | "scorecard";
 
 const on = (k: PageKey | null) => k === null || pageOn(k);

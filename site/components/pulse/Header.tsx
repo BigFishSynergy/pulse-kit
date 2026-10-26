@@ -24,7 +24,8 @@ export default async function Header({ title, meta, hoursOld, nav, options, chil
   // People (logins) and Post to Slack are the admin's alone (pulse.config.json people.admin).
   const extras: NavItem[] = isAdmin(session) ? [
     { href: "/pulse/hq/people", label: "People", current: title === "People" },
-    ...(pageOn("slack") ? [{ href: "/pulse/hq/slack", label: "Post to Slack", current: title === "Post to Slack" }] : []),
+    ...(pageOn("tv") ? [{ href: "/pulse/hq/tv", label: "TV screens", current: title === "TV screens" }] : []),
+    ...(pageOn("slack") ? [{ href: "/pulse/hq/slack", label: "Post a message", current: title === "Post a message" }] : []),
   ] : [];
   const home = links[0]?.href.replace(/\?.*$/, "") ?? "/pulse";
   const menus = { links, extras, name: session?.name.split(" ")[0] ?? "", view, options: !!options };

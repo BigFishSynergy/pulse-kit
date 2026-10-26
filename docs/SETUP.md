@@ -1,6 +1,6 @@
 # Pulse Kit setup, start to finish
 
-This takes a contractor from nothing to their own live Pulse: their CRM's numbers pulled automatically, their own rules (so Claude answers any number exactly the way the CRM does), and their own Pulse site with rep and owner screens and daily Slack posts. Everything runs in the client's own GitHub, Vercel and Slack accounts. The client owns all of it.
+This takes a contractor from nothing to their own live Pulse: their CRM's numbers pulled automatically, their own rules (so Claude answers any number exactly the way the CRM does), and their own Pulse site with rep and owner screens and daily messages through Slack, Google Chat, Teams or email. Everything runs in the client's own GitHub, Vercel and Slack accounts. The client owns all of it.
 
 Nobody needs a terminal, and nobody needs to be technical. The client's own Claude does the technical parts with the Pulse setup skill, and the two parts people worry about, the rules and matching the numbers, start from the client's own data. Benny can still lead them for a client who wants that done with them.
 
@@ -18,7 +18,7 @@ The steps below are the same walk-through, written out.
 
 | Who | Brings |
 |---|---|
-| The client's owner or admin | A GitHub account (an organization is best, free is fine), a Vercel account (Pro, $20 a month, because a business site needs it and the hourly notices need Pro's cron jobs), admin access to their CRM, and their Slack workspace if they want Slack posts |
+| The client's owner or admin | A GitHub account (an organization is best, free is fine), a Vercel account (Pro, $20 a month, because a business site needs it and the hourly notices need Pro's cron jobs), admin access to their CRM, and their Slack workspace if they want daily messages |
 | Benny | Access to the kit. Optional: leading the rules and the number matching with them |
 | Optional | An Anthropic API key in the client's own Claude Console (Ask Claude, Make a graphic, coaching cards, Speed Round), a Google account for a goals sheet, Windsor.ai for ad spend |
 
@@ -72,7 +72,7 @@ Settings, Secrets and variables, Actions. Names only here; the values are typed 
 - **brand:** logos go in `site/public/pulse/brand/` (a logo for light backgrounds, one for the dark header, a small mark). Colors: `primary` is the header band and main accent, `accent` the chips. The neutral navy and gold default works if they have no brand yet. Optional: a 1200 x 630 `site/public/pulse/og.png` for link previews.
 - **crm:** the CRM's name and the connector.
 - **timezone:** same as `rules/settings.json`.
-- **people:** leadership names, titles and initials (the initials match the scorecard owners), nicknames for reps, and the admin login (gets the automatic DMs and the Post to Slack page).
+- **people:** leadership names, titles and initials (the initials match the scorecard owners), nicknames for reps, and the admin login (gets the automatic notices, and the People, TV screens and Post a message pages).
 - **pages:** switch any page off. A page that is off disappears from the menus and returns a 404.
 - **slack:** channel names. **goals:** `file` or `sheet`. **map:** the service area. **pipeline:** the self-gen source name, at-risk statuses, the main trade word.
 
@@ -118,7 +118,7 @@ In the client's own Vercel account:
 | `ANTHROPIC_API_KEY` | Optional. Ask Claude and Make a graphic. Set a monthly spend limit in the Claude Console |
 | `PULSE_ASK_REPS` | Optional. `on` gives reps Ask Claude and graphics on their own numbers |
 | `NEXT_PUBLIC_MAPTILER_KEY` | Optional. A satellite map |
-| `PULSE_SLACK_BOT_TOKEN`, `PULSE_SLACK_NOTIFY_USER`, `PULSE_SLACK_CHANNELS` | Step 12 |
+| The message settings for their service | Step 12 |
 
 6. Domains: add their address (for example `pulse.theircompany.com`) and put it in `pulse.config.json` `company.site_url`. Redeploy.
 
@@ -129,14 +129,24 @@ In the client's own Vercel account:
 
 Roles: a **rep** sees only their own numbers plus the team's leaderboard tops. A **CSR** sees only their own CSR screen (a CSR shows up after 20 appointments in 90 days). **Leadership** sees everything. A rep who guesses a leadership address gets a plain 404. Logins are stored in their private Blob store, passwords only as one-way codes. (The older `site/users.mjs` command-line tool still works for anyone who prefers it.)
 
-## 12. Slack (optional)
+## 12. Messages (optional): Slack, Google Chat, Teams or email
 
-1. In the client's Slack, api.slack.com/apps, Create New App, From a manifest, and paste `docs/slack-app-manifest.yml` (change the name). Install it to the workspace.
-2. Add the app to each channel in `pulse.config.json` (channel settings, Integrations, Add apps).
-3. Vercel variables: `PULSE_SLACK_BOT_TOKEN` (the Bot User OAuth Token, Sensitive), `PULSE_SLACK_NOTIFY_USER` (the admin's Slack member ID), `PULSE_SLACK_CHANNELS` (`pulse:C0123,leadership:C0456,sales:C0789`, IDs from each channel's About tab). Redeploy.
-4. The admin signs in, opens **Post to Slack**, sends a test DM, sends themselves a sample of each daily message, then leaves the days they want switched on.
+The Pulse sends a short daily message, each new request, and the admin's notices through whatever the company already uses. Nobody signs up for anything new, and the Pulse works fine without messages. Pick one in `pulse.config.json` (`messages.service`), name the places it posts (`messages.channels`, usually a leadership place called `pulse` and a `sales` place for the team), then add that service's Vercel settings (Production, Sensitive) and redeploy:
 
-Only the live site sends. Automatic notices only DM the admin. A channel only gets the admin's own words from Post to Slack, the daily messages, and new requests. No customer names in any message.
+| Service | What they do | Vercel settings |
+|---|---|---|
+| `email` (works for everyone) | Use the company's own mailbox. Gmail or Google Workspace: turn on 2-step verification, make an app password. Microsoft 365: an SMTP-enabled mailbox | `PULSE_SMTP_URL` (for Gmail: `smtps://name%40theirco.com:APP-PASSWORD@smtp.gmail.com:465`), `PULSE_EMAIL_TO` (`pulse:owner@theirco.com;gm@theirco.com,sales:reps@theirco.com,admin:owner@theirco.com`), optional `PULSE_EMAIL_FROM` |
+| `google_chat` (Google Workspace) | In each Chat space: space name, Apps and integrations, Webhooks, Add, copy the address | `PULSE_GCHAT_WEBHOOKS` (`pulse:https://chat.googleapis.com/...,sales:...,admin:...`) |
+| `teams` (Microsoft 365) | In each channel: Workflows, "Post to a channel when a webhook request is received", copy the address | `PULSE_TEAMS_WEBHOOKS` (`pulse:https://...,sales:...,admin:...`) |
+| `slack` | Make the app from `docs/slack-app-manifest.yml` (api.slack.com/apps, From a manifest), install it, add it to each channel | `PULSE_SLACK_BOT_TOKEN`, `PULSE_SLACK_NOTIFY_USER` (the admin's member ID), `PULSE_SLACK_CHANNELS` (`pulse:C0123,sales:C0789`) |
+
+`admin` is where the admin's own notices go (with Slack, a DM). Webhook addresses and the mailbox password are secrets: anyone who has one can post as the Pulse, so they only ever go in Vercel. Then the admin signs in, opens **Post a message** (in the menu), sends a test, and sends themselves a sample of each daily message.
+
+Only the live site sends. A channel only gets the admin's own words, the daily messages, and new requests. No customer names in any message.
+
+## 12b. TV screens (optional)
+
+For a TV in the office: the admin opens **TV screens** in the menu and clicks **Set up a TV**. Four questions: where it hangs, who walks past it (the whole team, which never shows margins, cash or money owed, or leadership only), which slides, and how long each stays up. It makes a link just for that TV. On the TV's web browser (a smart TV's own browser, or a streaming stick or laptop plugged in), open the link and go full screen. It signs itself in, stays on, and refreshes every 10 minutes. Removing a TV stops its link.
 
 ## 13. The Claude skill
 
@@ -149,7 +159,8 @@ Fill in `skill-template/SKILL.md` (repo owner and name, company name) and add it
 - [ ] The Pulse shows today's "Data pulled" time
 - [ ] `rules/STARTING-RULES.md` questions answered (or the owner chose to keep the defaults for now)
 - [ ] Each role signed in on a phone: owner, one rep, one CSR. The rep cannot open a leadership page
-- [ ] Slack test DM and one sample message worked (if Slack is on)
+- [ ] A test message and one sample daily message arrived (if messages are on)
+- [ ] Each office TV shows its slides (if they have one)
 - [ ] The client knows: rules change only on github.com, by the owner; a red X in Actions emails them; the last good numbers stay up if a pull fails
 
 ## Day to day

@@ -1,6 +1,6 @@
 ---
 name: pulse-setup
-description: Set up a contractor's own Pulse from the Pulse Kit, start to finish, in plain words, for someone who is not technical. Covers the GitHub and Vercel accounts, connecting the CRM (AccuLynx or any CRM by CSV), the company settings and map, drafting the rules from the company's own data and confirming them with the owner, matching every number to the CRM's own reports, the first login and the team's logins, Slack, and going live. Use whenever someone says they want to set up their Pulse, continue Pulse setup, connect their CRM to the Pulse, fix a red X in their Pulse repo, match their Pulse numbers to their CRM, or add people to their Pulse, and whenever they are stuck anywhere in Pulse setup.
+description: Set up a contractor's own Pulse from the Pulse Kit, start to finish, in plain words, for someone who is not technical. Covers the GitHub and Vercel accounts, connecting the CRM (AccuLynx or any CRM by CSV), the company settings and map, drafting the rules from the company's own data and confirming them with the owner, matching every number to the CRM's own reports, the first login and the team's logins, daily messages (Slack, Google Chat, Teams or email), office TV screens, and going live. Use whenever someone says they want to set up their Pulse, continue Pulse setup, connect their CRM to the Pulse, fix a red X in their Pulse repo, match their Pulse numbers to their CRM, or add people to their Pulse, set up a TV screen, send Pulse messages without Slack, and whenever they are stuck anywhere in Pulse setup.
 ---
 
 # Pulse setup
@@ -88,9 +88,13 @@ In their own Vercel account (Pro, because it's a business site and the hourly no
 
 They open `https://<their site>/pulse` and land on the Welcome page: the setup code from step 6, their name, a password. That makes the admin login. Then the People page (in the menu): add each person, pick their role (a rep sees only their own numbers, a CSR only their own appointments, leadership everything), and send each person their own sign-in link directly. A link or password shows once; New link makes another.
 
-### 8. Slack (optional)
+### 8. Messages and TVs (optional)
 
-`docs/SETUP.md` step 12: make the app from `docs/slack-app-manifest.yml`, add it to the channels, and they put `PULSE_SLACK_BOT_TOKEN`, `PULSE_SLACK_NOTIFY_USER` and `PULSE_SLACK_CHANNELS` in Vercel. The admin sends a test from Post to Slack.
+Ask what they already use to talk as a team: Slack, Google Chat, Microsoft Teams, or just email. Never suggest signing up for something new; email works for everyone. Set `messages.service` in `site/pulse.config.json`, then walk them through `docs/SETUP.md` step 12 for that one service: they make the webhook or app password themselves and type it into Vercel. Then the admin opens **Post a message**, sends a test, and sends themselves a sample of each daily message.
+
+If they have a TV in the office (or want one), walk them through **TV screens**, **Set up a TV**: help them pick slides for the people who walk past it. A sales floor TV is about wins, leaderboards and goals; margins, cash and money owed stay on leadership-only TVs. Then they open the link on the TV and go full screen.
+
+If they'd like help beyond setup (their brand, their sales process, how the business runs), the footer has **Message Benny** and **Help with my brand**. Mention it once, lightly, only if it fits what they asked.
 
 ### 9. Go live
 

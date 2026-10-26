@@ -13,17 +13,17 @@ const CH: Record<string, string> = Object.fromEntries(Object.entries(CONFIG.slac
 const where = (d: Day) => d.to.map((k) => CH[k] ?? k).join(" + ");
 const when = (iso?: string) => (iso ? new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "");
 
-export default function SlackPost({ places, ready, daily, settings }: { places: Place[]; ready: boolean; daily: Day[]; settings: Record<string, Setting> }) {
+export default function SlackPost({ places, ready, daily, settings, service }: { places: Place[]; ready: boolean; daily: Day[]; settings: Record<string, Setting>; service: string }) {
   return (
     <>
-      <Compose places={places} ready={ready} />
-      <Daily days={daily} initial={settings} ready={ready} />
+      <Compose places={places} ready={ready} service={service} />
+      <Daily days={daily} initial={settings} ready={ready} service={service} />
     </>
   );
 }
 
 /** The daily messages post on their own. Here the admin can pause a day, send themselves a sample, or post one now. */
-function Daily({ days, initial, ready }: { days: Day[]; initial: Record<string, Setting>; ready: boolean }) {
+function Daily({ days, initial, ready, service }: { days: Day[]; initial: Record<string, Setting>; ready: boolean; service: string }) {
   const [s, setS] = useState(initial);
   const [busy, setBusy] = useState("");
   const [msg, setMsg] = useState("");
@@ -35,7 +35,7 @@ function Daily({ days, initial, ready }: { days: Day[]; initial: Record<string, 
       const j = await r.json().catch(() => ({}));
       if (r.ok) {
         setS(j.settings);
-        setMsg(action === "daily.sample" ? `Sample of "${day.title}" sent to your DMs. Check Slack.` : action === "daily.post" ? `"${day.title}" posted to ${where(day)}.` : `"${day.title}" is ${on ? "on" : "off"}.`);
+        setMsg(action === "daily.sample" ? `Sample of "${day.title}" sent to you. Check ${service}.` : action === "daily.post" ? `"${day.title}" posted to ${where(day)}.` : `"${day.title}" is ${on ? "on" : "off"}.`);
       } else setMsg(j.error || "That did not work. Try again.");
     } catch {
       setMsg("That did not work. Check the connection and try again.");
@@ -72,7 +72,7 @@ function Daily({ days, initial, ready }: { days: Day[]; initial: Record<string, 
   );
 }
 
-function Compose({ places, ready }: { places: Place[]; ready: boolean }) {
+function Compose({ places, ready, service }: { places: Place[]; ready: boolean; service: string }) {
   const [to, setTo] = useState(places[0].key);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -99,9 +99,9 @@ function Compose({ places, ready }: { places: Place[]; ready: boolean }) {
   return (
     <section>
       <div className="sechead">
-        <h2>Post to Slack <small>Posts as the {CO.pulse_name} app in the {CO.name} workspace, word for word. Only you can see this page.</small></h2>
+        <h2>Post a message <small>Posts as the {CO.pulse_name} through {service}, word for word. Only you can see this page.</small></h2>
       </div>
-      {!ready ? <p className="sub">Slack is not set up yet: the app&apos;s token or your member ID is missing in Vercel.</p> : null}
+      {!ready ? <p className="sub">Messages are not set up yet: the {service} settings are missing in Vercel (docs/SETUP.md step 12).</p> : null}
       <div className="checks" role="radiogroup" aria-label="Where it goes">
         {places.map((p) => (
           <label key={p.key} className={`check ${to === p.key ? "on" : ""}`}>
@@ -111,7 +111,7 @@ function Compose({ places, ready }: { places: Place[]; ready: boolean }) {
         ))}
       </div>
       <textarea rows={6} maxLength={3500} value={text} onChange={(e) => setText(e.target.value)} aria-label="Your message"
-        placeholder="Write it the way you want it to read. *bold* and links work the same as in Slack." />
+        placeholder="Write it the way you want it to read. *bold* works." />
       {body ? (
         <div style={{ border: "1px solid var(--line)", padding: "12px 14px" }}>
           <div className="label" style={{ marginBottom: 6 }}>How it will post to {place.name}</div>

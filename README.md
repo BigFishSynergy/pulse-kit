@@ -1,6 +1,6 @@
 # Pulse Kit
 
-Everything a contractor needs to get their own Pulse: their CRM's numbers pulled in automatically, their own rules (so Claude answers any number exactly the way the CRM does, to the record and the penny), and their own Pulse site with rep and owner screens, a leadership scorecard, a map, POWER rankings, a weekly Speed Round, Make a graphic, Ask Claude, requests and daily Slack posts. It all runs in the client's own GitHub and Vercel accounts, and the client owns it.
+Everything a contractor needs to get their own Pulse: their CRM's numbers pulled in automatically, their own rules (so Claude answers any number exactly the way the CRM does, to the record and the penny), and their own Pulse site with rep and owner screens, a leadership scorecard, a map, POWER rankings, a weekly Speed Round, Make a graphic, Ask Claude, requests, office TV screens, and daily messages through Slack, Google Chat, Teams or email. It all runs in the client's own GitHub and Vercel accounts, and the client owns it.
 
 Self-serve with the client's own Claude (`setup-skill/`): no terminal, the rules drafted from their own CRM data, the numbers matched with one button. Benny Fisher (Visionary Navigator, bennyfisher.com) can lead it with them for a client who wants it done with them.
 

@@ -5,7 +5,7 @@ import raw from "../../pulse.config.json";
 type Channel = { name: string; who: string };
 export type PageKey =
   | "scorecard" | "reports" | "moneyball" | "map" | "team" | "power" | "production" | "costs" | "marketing" | "csr"
-  | "speed_round" | "ask_claude" | "graphics" | "requests" | "activity" | "slack" | "soundtrack";
+  | "speed_round" | "ask_claude" | "graphics" | "requests" | "activity" | "slack" | "soundtrack" | "tv" | "tips";
 
 const C = raw as any;
 
@@ -16,9 +16,11 @@ export const CONFIG = {
   timezone: (C.timezone as string) || "America/New_York",
   people: C.people as { leadership: { name: string; initials: string; title: string }[]; nicknames: Record<string, string>; admin: string },
   jobNumberLabel: (C.job_number_label as string) || "Job #",
-  slack: C.slack as { channels: Record<string, Channel>; daily_messages: boolean; requests_channel: string },
+  /** messages (older copies call it slack): which service, the places it posts to, the daily messages switch. */
+  slack: (C.messages ?? C.slack) as { service?: string; channels: Record<string, Channel>; daily_messages: boolean; requests_channel: string },
   goals: C.goals as { source: "sheet" | "file"; file: string; spend_sheet_id: string },
   map: C.map as { zips_file: string; shapes_file: string; region_word: string; center: [number, number]; zoom: number },
+  support: (C.support ?? { name: "Benny Fisher", title: "Visionary Navigator", email: "benny@bennyfisher.com", site: "https://bennyfisher.com", call: "https://bennyfisher.com/book-a-call" }) as { name: string; title: string; email: string; site: string; call: string },
   pipeline: C.pipeline as { self_gen_source: string; at_risk_statuses: string[]; main_trade_word: string; csr_min_appointments: number },
 };
 
@@ -27,7 +29,7 @@ export const CRM = CONFIG.crm.name;
 export const TZ = CONFIG.timezone;
 
 /** Is a whole page switched on in pulse.config.json? */
-export const pageOn = (k: PageKey): boolean => C.pages?.[k] !== false;
+export const pageOn = (k: PageKey): boolean => (k === "slack" ? (C.pages?.messages ?? C.pages?.slack) : C.pages?.[k]) !== false && !(k === "slack" && (C.messages ?? C.slack)?.service === "none");
 
 /** The time zone's short name right now ("CT", "ET"), for "Data pulled 7:59 PM CT". */
 export function tzShort(d = new Date()): string {
