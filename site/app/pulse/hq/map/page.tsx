@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 // The service-area map and the regions side by side (/hq/pulse#map forwards here).
 export default async function MapPage({ searchParams }: { searchParams: { week?: string } }) {
   requirePage("map");
-  requireLead();
+  (await requireLead());
   const week = await pickWeek(searchParams.week);
   const [meta, geo] = await Promise.all([getMeta(week), getGeo(week)]);
   return (

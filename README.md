@@ -2,9 +2,9 @@
 
 Everything a contractor needs to get their own Pulse: their CRM's numbers pulled in automatically, their own rules (so Claude answers any number exactly the way the CRM does, to the record and the penny), and their own Pulse site with rep and owner screens, a leadership scorecard, a map, POWER rankings, a weekly Speed Round, Make a graphic, Ask Claude, requests and daily Slack posts. It all runs in the client's own GitHub and Vercel accounts, and the client owns it.
 
-Done with you: Benny Fisher (Visionary Navigator, bennyfisher.com) leads the rules session and the number matching.
+Self-serve with the client's own Claude (`setup-skill/`): no terminal, the rules drafted from their own CRM data, the numbers matched with one button. Benny Fisher (Visionary Navigator, bennyfisher.com) can lead it with them for a client who wants it done with them.
 
-**Setting one up? Start with `docs/SETUP.md`** (it opens with a prompt that has Claude walk you through it).
+**Setting one up?** Add `setup-skill/SKILL.md` to the client's Claude and say "Help me set up my Pulse." The same steps are written out in `docs/SETUP.md`.
 
 ## How it fits together
 
@@ -38,8 +38,9 @@ Done with you: Benny Fisher (Visionary Navigator, bennyfisher.com) leads the rul
 | `scripts/` | The rules check, the data contract check, the scrubber, the map file builder |
 | `site/` | The Pulse. `site/pulse.config.json` holds everything company-specific; `site/content/` the client's own content |
 | `sample/` | A made-up company to prove the kit end to end, with screenshots |
-| `skill-template/` | The Claude skill that reads the rules and data |
-| `.github/workflows/` | pull-acculynx, import-csv, check-rules, pulse-data, acculynx-list-schedules |
+| `setup-skill/` | The Claude skill that walks a client through setup and helps when they're stuck |
+| `skill-template/` | The Claude skill that answers number questions from the rules and data |
+| `.github/workflows/` | pull-acculynx, import-csv, check-rules, pulse-data, and the setup buttons: acculynx-list-schedules, start-rules, prove-it, make-map |
 
 ## Try it
 

@@ -12,7 +12,7 @@ const where = new Map<string, { url: string; size: number }>();
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   if (!pageOn("soundtrack")) return new Response("Not found", { status: 404 });
-  if (!getSession()) return new NextResponse("Not allowed", { status: 401 });
+  if (!(await getSession())) return new NextResponse("Not allowed", { status: 401 });
   if (!/^[a-z0-9-]{1,60}$/.test(params.id)) return new NextResponse("Not found", { status: 404 });
   let meta = where.get(params.id);
   if (!meta) {

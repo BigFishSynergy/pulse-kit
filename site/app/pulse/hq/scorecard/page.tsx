@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 // and which manager is on red alert. Numbers from pipeline/scoreboard.py; cash is typed in on the page.
 export default async function ScorecardPage({ searchParams }: { searchParams: { week?: string } }) {
   requirePage("scorecard");
-  const s0 = requireLead();
+  const s0 = (await requireLead());
   const week = await pickWeek(searchParams.week);
   const [meta, s, cash] = await Promise.all([getMeta(week), getLeadership(week), listCash()]);
   const sb = (s as any)?.scoreboard; // eslint-disable-line @typescript-eslint/no-explicit-any

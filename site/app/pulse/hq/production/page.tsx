@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 // Production and cycle time. Sections of the Pulse until Oct 14 2026 (/hq/pulse#production forwards here).
 export default async function ProductionPage({ searchParams }: { searchParams: { week?: string } }) {
   requirePage("production");
-  requireLead();
+  (await requireLead());
   const week = await pickWeek(searchParams.week);
   const [meta, s] = await Promise.all([getMeta(week), getLeadership(week)]);
   return (

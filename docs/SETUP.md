@@ -2,13 +2,15 @@
 
 This takes a contractor from nothing to their own live Pulse: their CRM's numbers pulled automatically, their own rules (so Claude answers any number exactly the way the CRM does), and their own Pulse site with rep and owner screens and daily Slack posts. Everything runs in the client's own GitHub, Vercel and Slack accounts. The client owns all of it.
 
-Benny leads two parts in person: the rules session (step 8) and matching the numbers (step 9). Everything else is a checklist.
+Nobody needs a terminal, and nobody needs to be technical. The client's own Claude does the technical parts with the Pulse setup skill, and the two parts people worry about, the rules and matching the numbers, start from the client's own data. Benny can still lead them for a client who wants that done with them.
 
 ## The easiest way: let Claude walk you through it
 
-Open Claude Code in a copy of this repo and paste this:
+Add the skill in `setup-skill/SKILL.md` to the client's own Claude (Customize, Skills, upload it; or put the folder in `.claude/skills/` of their repo for Claude Code), then say:
 
-> Walk me through setting up Pulse Kit for a new client. Read docs/SETUP.md, docs/DATA-CONTRACT.md and connectors/README.md first. Go one step at a time: tell me what the step is for, what I or the client need to do, and check it is done before moving on. Never ask me to paste a key, password or token into this chat; keys only ever go into GitHub or Vercel settings, typed in by whoever owns the account. When we reach the rules session, use guides/rules-worksheet.md and update rules/settings.json and rules/RULES.md with the answers. When we reach number matching, use guides/prove-it-checklist.md. At the end, tell me what is left and what the client needs to do.
+> Help me set up my Pulse.
+
+It reads these docs, keeps a progress file in the repo so any later chat picks up where the last one stopped, does the technical steps itself when it can, and never asks for a key in the chat. Claude Code (the Code tab in the Claude desktop app) can do the most for them: it edits the files and presses the GitHub buttons. In a plain chat, it tells them exactly what to click.
 
 The steps below are the same walk-through, written out.
 
@@ -17,25 +19,20 @@ The steps below are the same walk-through, written out.
 | Who | Brings |
 |---|---|
 | The client's owner or admin | A GitHub account (an organization is best, free is fine), a Vercel account (Pro, $20 a month, because a business site needs it and the hourly notices need Pro's cron jobs), admin access to their CRM, and their Slack workspace if they want Slack posts |
-| Benny | This repo, the rules session, the number matching |
+| Benny | Access to the kit. Optional: leading the rules and the number matching with them |
 | Optional | An Anthropic API key in the client's own Claude Console (Ask Claude, Make a graphic, coaching cards, Speed Round), a Google account for a goals sheet, Windsor.ai for ad spend |
 
 **Security, always:** keys, tokens and passwords go only into GitHub secrets or Vercel environment variables, typed in by the person who owns that account. Never in email, chat, a text, or any file. Everything reads the CRM only; nothing ever writes to it. Customer names, phones, emails and addresses never get saved (the connectors drop them) and never show on the site (the build stops if one slips through).
 
 ## 1. Make the client's copy
 
-1. The client makes an empty **private** repo in their GitHub, for example `their-org/pulse`, and adds Benny as a collaborator (Settings, Collaborators).
-2. Benny pushes a clean copy of the kit into it:
-
-   ```bash
-   git clone https://github.com/BigFishSynergy/pulse-kit.git client-pulse
-   cd client-pulse && git remote set-url origin https://github.com/their-org/pulse.git && git push -u origin main
-   ```
+1. Benny gives the client's GitHub account read access to the kit (or sends them the kit link if it's public).
+2. On the kit's GitHub page, the client clicks **Use this template**, Create a new repository, picks their organization, names it `pulse`, picks **Private**, and creates it.
 
 3. In the client's repo: Settings, Actions, General, Workflow permissions: **Read and write**. Save.
 4. Settings, Secrets and variables, Actions, Variables tab: add `CRM_CONNECTOR` = `acculynx` (or `csv`).
 
-When the project is live and handed over, the client can remove Benny as a collaborator. Nothing breaks.
+Their copy is theirs from the start: nothing in it points back at the kit.
 
 ## 2. Connect the CRM
 
@@ -83,13 +80,7 @@ Optional content the client supplies: `site/content/speed-round.md` (what the we
 
 ## 6. The service area map
 
-Make a CSV of their zips (`zip,town,region`, with region `OUT` for zips they get leads from but do not serve; those show as one gray block, left out of colors and rankings) and run:
-
-```bash
-python scripts/make_zip_files.py --zips zips.csv
-```
-
-It writes `site/content/zips.json` and `site/public/pulse/zips.geojson` from the U.S. Census (2020 zip areas, public data). Add `--market` with a free Census API key in the `CENSUS_API_KEY` environment variable for owned homes, home values, home age and income by zip (the map's market views and the region comparison). Set `map.center` and `map.zoom` in `pulse.config.json` to frame the area.
+Make `site/content/zips.csv` on github.com (Add file, Create new file) with one line per zip: `zip,town,region`. Use region `OUT` for zips they get leads from but do not serve; those show as one gray block, left out of colors and rankings. Then Actions, **make-map**, Run workflow. It builds `site/content/zips.json` and `site/public/pulse/zips.geojson` from the U.S. Census (2020 zip areas, public data). With a free Census API key in the repo secret `CENSUS_API_KEY`, it also adds owned homes, home values, home age and income by zip. Set `map.center` and `map.zoom` in `pulse.config.json` to frame the area.
 
 ## 7. Goals
 
@@ -98,22 +89,15 @@ It writes `site/content/zips.json` and `site/public/pulse/zips.geojson` from the
 
 Net Profit and 5-star reviews are not in the CRM; they go in the Actual column.
 
-## 8. The rules session (Benny leads)
+## 8. The rules, from their own data
 
-This is the heart of it. Sit with the owner and go through `guides/rules-worksheet.md` together: every decision the rulebook makes (what counts as a contact, a lead, an appointment, a sit, a sale, revenue, an upgrade, a call back; which date each one uses; close rate against demo conversion; the GP rule; discounts; the roster; the scorecard).
+1. Actions, **start-rules**, Run workflow (type REPLACE). It drafts `rules/settings.json` and `rules/RULES.md` from their real CRM data with the starting defaults (the roster from who's been running appointments, former reps, dead reasons, work types, the main trade, the job number prefix), and writes `rules/STARTING-RULES.md`: one plain question per decision for the owner. check-rules runs after it and should be green.
+2. Go down `rules/STARTING-RULES.md` with the owner. Most answers are "yes, that's right". When one changes a rule, change `rules/settings.json` (exact names from the data) or the wording in `rules/RULES.md`, and let check-rules run. The setup skill does this as a conversation.
+3. `guides/rules-worksheet.md` explains every decision and its default, for anything the owner wants to think through. Keeping the default is always fine; the Pulse can go live on the defaults and be tuned later.
 
-Then put the answers in:
+## 9. Match the numbers
 
-- `rules/settings.json`: the exact CRM names (reps, dead reasons, work types, categories), the scorecard owners and goals, the job number prefix, the time zone. Names must match the CRM exactly, letter for letter.
-- `rules/RULES.md`: every FILL_IN, and any rule that works differently for this company.
-- `rules/pulse_metrics.py`: only if a definition really differs. Most companies never touch it.
-- `rules/MARKETING_PHILOSOPHY.md`: how they judge marketing, or delete it with section 14.
-
-Push, then watch **Actions, check-rules**. Red lists every FILL_IN still open and every name that is not in the CRM data (almost always a typo). Keep going until it is green.
-
-## 9. Match the numbers (Benny leads)
-
-Go through `guides/prove-it-checklist.md` with the client: run each number with the rules and match it against the CRM's own report for the same dates, to the record and to the penny. When something is off, find the records that differ and fix the rule or the setting, never the number. When every line matches, record the known-good numbers in `rules/RULES.md` section 10. From then on, any rule change has to reproduce them.
+Actions, **prove-it**, Run workflow, with the first and last day of the last full quarter. The run's summary lists every number on `guides/prove-it-checklist.md`, counted with the rules. The owner reads each matching number off the CRM's own report. When a line is off, run prove-it again with `list` set to that line (for example `sales`) to get the job numbers the rules counted, compare them with the CRM report's job list, and fix the rule or the setting that explains the difference, never the number. When every line matches, record the numbers in `rules/RULES.md` section 10. From then on, any rule change has to reproduce them.
 
 ## 10. The Vercel project and Blob store
 
@@ -128,7 +112,7 @@ In the client's own Vercel account:
 | Name | What |
 |---|---|
 | `PULSE_SESSION_SECRET` | 32+ random characters. Signs login cookies. Changing it logs everyone out |
-| `PULSE_USERS` | Logins, set by `node users.mjs push` (step 11) |
+| `PULSE_SETUP_CODE` | A code they make up (8 or more characters) to create the first login on `/pulse/setup` (step 11) |
 | `BLOB_READ_WRITE_TOKEN` | Added by Vercel in step 2 |
 | `CRON_SECRET` | Random characters. Vercel sends it to the cron jobs in `site/vercel.json` |
 | `ANTHROPIC_API_KEY` | Optional. Ask Claude and Make a graphic. Set a monthly spend limit in the Claude Console |
@@ -140,19 +124,10 @@ In the client's own Vercel account:
 
 ## 11. Logins
 
-From the `site` folder, on the admin's computer (the Vercel CLI logged in to the client's account and `vercel link`ed to the project):
+1. Open `https://<their site>/pulse`. A brand new Pulse goes straight to the Welcome page: the setup code from step 10, the admin's name and a password. That makes the admin login (`people.admin` in `pulse.config.json`). The page stops working once any login exists.
+2. In the menu, **People**: add each person, pick their role and whose numbers they see, and send each person their own sign-in link directly (by text, to them only). Links and passwords show once; **New link** or **New password** makes another, and **Remove** signs someone out right away.
 
-```bash
-node users.mjs add pat "Pat Owner" lead
-node users.mjs add alex "Alex Rivera" rep alex-rivera
-node users.mjs add jamie "Jamie Ortiz" csr jamie-ortiz
-node users.mjs link alex
-node users.mjs push
-```
-
-Rep slugs are the roster name in lower case with dashes; CSR slugs are their "Appointment Set By" name the same way (a CSR gets a screen after 20 appointments in 90 days). Passwords print once in that terminal only. The easiest handover is each person's own sign-in link (`link`), sent to them directly. `push` refuses to drop a login that production still has. Redeploy after a push.
-
-Roles: a **rep** sees only their own numbers plus the team's leaderboard tops. A **CSR** sees only their own CSR screen. **Leadership** sees everything. A rep who guesses a leadership address gets a plain 404.
+Roles: a **rep** sees only their own numbers plus the team's leaderboard tops. A **CSR** sees only their own CSR screen (a CSR shows up after 20 appointments in 90 days). **Leadership** sees everything. A rep who guesses a leadership address gets a plain 404. Logins are stored in their private Blob store, passwords only as one-way codes. (The older `site/users.mjs` command-line tool still works for anyone who prefers it.)
 
 ## 12. Slack (optional)
 
@@ -172,6 +147,7 @@ Fill in `skill-template/SKILL.md` (repo owner and name, company name) and add it
 - [ ] check-rules is green and section 10 of RULES.md has the known-good numbers
 - [ ] pull and pulse-data have run on their own at least once (Actions tab)
 - [ ] The Pulse shows today's "Data pulled" time
+- [ ] `rules/STARTING-RULES.md` questions answered (or the owner chose to keep the defaults for now)
 - [ ] Each role signed in on a phone: owner, one rep, one CSR. The rep cannot open a leadership page
 - [ ] Slack test DM and one sample message worked (if Slack is on)
 - [ ] The client knows: rules change only on github.com, by the owner; a red X in Actions emails them; the last good numbers stay up if a pull fails

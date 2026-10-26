@@ -28,4 +28,4 @@ npm run dev
 
 ## Logins
 
-`node users.mjs list | add | password | link | rename | guest | remove | push`. Passwords are stored only as scrypt hashes in `PULSE_USERS`. See `docs/SETUP.md` step 11.
+In the browser: `/pulse/setup` makes the first (admin) login with the `PULSE_SETUP_CODE` setting, then the admin manages everyone on the People page (`/pulse/hq/people`). Logins live in the private Blob store (`admin/users.json`, `lib/pulse/userstore.ts`), passwords and links only as one-way hashes. The older command-line tool (`node users.mjs`) still works and writes `PULSE_USERS`; the two are merged, and a login saved on the People page wins. See `docs/SETUP.md` step 11.

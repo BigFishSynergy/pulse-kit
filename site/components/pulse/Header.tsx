@@ -9,7 +9,7 @@ import type { Meta } from "@/lib/pulse/data";
 // quarter chip, the music (when the soundtrack page is on) and a small menu (dark mode, Log out). Under it a dark tab
 // bar with the main pages and More, a line under the page you're on. On a phone the band is the logo and two buttons,
 // and the title sits under it. `children` sit at the right of the row under the header (the Clean / Everything switch).
-export default function Header({ title, meta, hoursOld, nav, options, children }: {
+export default async function Header({ title, meta, hoursOld, nav, options, children }: {
   title: string; meta: Meta | null; hoursOld: number | null; nav: NavItem[];
   /** Kept so older pages that pass it still compile. */
   trial?: boolean;
@@ -18,11 +18,14 @@ export default function Header({ title, meta, hoursOld, nav, options, children }
   children?: React.ReactNode;
 }) {
   const stale = hoursOld != null && hoursOld > 24;
-  const session = getSession();
+  const session = (await getSession());
   const view = !!session?.view;
   const links = view ? nav.filter((n) => !/\/hq\/(ask|game|requests|activity)\b/.test(n.href)) : nav;
-  // Post to Slack is the admin's alone (pulse.config.json people.admin).
-  const extras: NavItem[] = pageOn("slack") && isAdmin(session) ? [{ href: "/pulse/hq/slack", label: "Post to Slack", current: title === "Post to Slack" }] : [];
+  // People (logins) and Post to Slack are the admin's alone (pulse.config.json people.admin).
+  const extras: NavItem[] = isAdmin(session) ? [
+    { href: "/pulse/hq/people", label: "People", current: title === "People" },
+    ...(pageOn("slack") ? [{ href: "/pulse/hq/slack", label: "Post to Slack", current: title === "Post to Slack" }] : []),
+  ] : [];
   const home = links[0]?.href.replace(/\?.*$/, "") ?? "/pulse";
   const menus = { links, extras, name: session?.name.split(" ")[0] ?? "", view, options: !!options };
   const tz = meta?.pulled_at?.match(/ ([A-Z]{1,4})$/)?.[1];

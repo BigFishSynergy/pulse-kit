@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // Moneyball for leadership: who to send where, what-if, hot and cold spots, where to advertise. From the Report Builder ledger.
 export default async function MoneyballPage() {
   requirePage("moneyball");
-  requireLead();
+  (await requireLead());
   const meta = await getMeta();
   return (
     <div className="wrap">

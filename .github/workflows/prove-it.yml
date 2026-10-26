@@ -1,0 +1,51 @@
+name: prove-it
+
+# Matching the numbers (guides/prove-it-checklist.md). Prints every number on the checklist for a period, counted with the
+# current rules, on the run's summary page. Put each next to the number from the CRM's own report. To dig into a line
+# that is off, run it again with "list" set to that line (for example sales) to get the job numbers behind it.
+
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: "First day, YYYY-MM-DD"
+        required: true
+      end:
+        description: "Last day, YYYY-MM-DD"
+        required: true
+      by:
+        description: "Optional: split by a column (Primary Salesperson, Parent Lead Source)"
+        required: false
+      list:
+        description: "Optional: list the job numbers behind one line (sales, sits, revenue, leads...)"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  numbers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          path: databranch
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet pandas
+      - name: The numbers
+        env:
+          START: ${{ inputs.start }}
+          END: ${{ inputs.end }}
+          BY: ${{ inputs.by }}
+          LIST: ${{ inputs.list }}
+        run: |
+          ARGS=(databranch/data --start "$START" --end "$END")
+          [ -n "$BY" ] && ARGS+=(--by "$BY")
+          [ -n "$LIST" ] && ARGS+=(--list "$LIST")
+          python scripts/prove_it.py "${ARGS[@]}" | tee out.txt
+          { echo '```'; cat out.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

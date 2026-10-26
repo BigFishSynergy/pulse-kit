@@ -325,7 +325,7 @@ async function speedRound() {
   const week = quizWeek();
   const [quiz, attempts] = await Promise.all([getQuizFile(week), allAttempts(week)]);
   const b = board(attempts);
-  const players = users().filter((u) => !u.view && u.u !== "guest" && u.u !== "leadteam" && !u.expires);
+  const players = (await users()).filter((u) => !u.view && u.u !== "guest" && u.u !== "leadteam" && !u.expires);
   const played = new Set(b.map((x) => x.u));
   const waiting = players.filter((u) => !played.has(u.u)).map((u) => u.name);
   const top = b.slice(0, 5).map((x, i) => `${MEDALS[i]}  *${x.name}*  ·  ${x.score.toLocaleString("en-US")} pts  (${x.right}/${x.n} right, ${x.secs}s)`);

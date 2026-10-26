@@ -13,7 +13,7 @@ const shift = (iso: string, n: number) => new Date(Date.parse(iso + "T12:00:00Z"
 
 export default async function Activity() {
   requirePage("activity");
-  requireLeadEditor();
+  (await requireLeadEditor());
   const today = etDay();
   const dow = (new Date(today + "T12:00:00Z").getUTCDay() + 6) % 7;
   const monday = shift(today, -dow);
@@ -26,7 +26,7 @@ export default async function Activity() {
   return (
     <div className="wrap">
       <Header title="Activity" meta={meta} hoursOld={hoursOld(meta)} nav={leadNav("activity")} />
-      <ActivityView logs={logs} everyone={users().map(({ u, name, role }) => ({ u, name, role }))} ranges={ranges} />
+      <ActivityView logs={logs} everyone={(await users()).map(({ u, name, role }) => ({ u, name, role }))} ranges={ranges} />
       <Footer />
     </div>
   );

@@ -2,10 +2,10 @@ import SuggestBox from "./SuggestBox";
 import { getSession } from "@/lib/pulse/auth";
 import { CO, CRM, pageOn } from "@/lib/pulse/config";
 
-export default function Footer() {
+export default async function Footer() {
   return (
     <>
-    {getSession()?.view || !pageOn("requests") ? null : <SuggestBox />}
+    {(await getSession())?.view || !pageOn("requests") ? null : <SuggestBox />}
     <footer>
       <div>Counts follow {CO.name}&apos;s own rules, checked against the certified {CRM} reports. Refreshed after each {CRM} update.</div>
       <div>Weeks run Monday to Sunday. Records show job numbers and {CRM} links only, never customer names.</div>

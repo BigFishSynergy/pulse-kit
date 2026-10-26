@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 // Ask Claude for leadership: the whole company or one rep's screen, plus how to use the site. Chats are saved per person.
 export default async function Ask({ searchParams }: { searchParams: { q?: string; rep?: string; week?: string } }) {
   requirePage("ask_claude");
-  requireLeadEditor();
+  (await requireLeadEditor());
   const weeks = await getWeeks();
   const week = searchParams.week && WEEK.test(searchParams.week) && weeks.some((w) => w.week_start === searchParams.week) ? searchParams.week : undefined;
   const [meta, people] = await Promise.all([getMeta(week), getPeople(week)]);

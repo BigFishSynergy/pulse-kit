@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 // Leadership opens any rep's screen, exactly as that rep sees it.
 export default async function RepForLead({ params, searchParams }: { params: { slug: string }; searchParams: { week?: string } }) {
-  const me = requireLead();
+  const me = (await requireLead());
   const look = getLook();
   const weeks = await getWeeks();
   const week = searchParams.week && WEEK.test(searchParams.week) && weeks.some((w) => w.week_start === searchParams.week) ? searchParams.week : undefined;

@@ -42,7 +42,7 @@ You are talking with one sales rep about their own numbers. You only have their 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export async function POST(req: NextRequest) {
   if (!pageOn("ask_claude")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (s?.view) return NextResponse.json({ error: VIEW_ONLY }, { status: 403 });
   if (!s) return NextResponse.json({ error: "Please log in again." }, { status: 401 });
   if (!process.env.ANTHROPIC_API_KEY) return NextResponse.json({ error: "Ask Claude is not switched on yet." }, { status: 503 });

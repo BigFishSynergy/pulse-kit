@@ -46,7 +46,7 @@ async function linkCopy(u: string): Promise<string | null> {
 
 /** The signed-in person's own working link token: this device's first, then their saved copy. Null if neither works. */
 export async function myLinkToken(s: Session): Promise<string | null> {
-  return linkOnDevice(s) ?? openLink(await linkCopy(s.u), s);
+  return await linkOnDevice(s) ?? await openLink(await linkCopy(s.u), s);
 }
 
 /** The site's address: pulse.config.json company.site_url live (the address users.mjs prints), the visitor's own when testing. */

@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 // A CSR's own screen. The server reads only this CSR's file.
 export default async function MyCsrPulse() {
-  const s = requireCsr();
+  const s = (await requireCsr());
   const [meta, c] = await Promise.all([getMeta(), getCsr(s.csr)]);
   return (
     <div className="wrap">

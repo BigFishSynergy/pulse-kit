@@ -166,7 +166,7 @@ def main():
                         if inv <= as_of:
                             r["invoiced"] = inv
                             cl = inv + timedelta(days=int(rng.expovariate(1 / 7)) + 2)
-                            if cl <= as_of and rng.random() < 0.97:
+                            if cl <= as_of and (rng.random() < 0.97 or inv < as_of - timedelta(days=45)):
                                 r["closed"] = cl
                                 gp = rng.gauss(0.355, 0.07)
                                 if rng.random() < 0.02:

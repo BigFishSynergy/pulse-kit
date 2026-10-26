@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 // The admin's Post to Slack page: the only way a person's words reach a Slack channel. Everyone else gets a plain 404.
 export default async function PostToSlack() {
   requirePage("slack");
-  const s = requireLead();
+  const s = (await requireLead());
   if (!isAdmin(s)) notFound();
   const [meta, settings] = await Promise.all([getMeta(), readSettings()]);
   const places = [

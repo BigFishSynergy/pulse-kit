@@ -7,7 +7,7 @@ import { adminFirst } from "@/lib/pulse/config";
 export type LoginState = { error?: string };
 
 async function login(role: Role, form: FormData): Promise<LoginState> {
-  const user = checkLogin(String(form.get("username") || ""), String(form.get("password") || ""), role);
+  const user = await checkLogin(String(form.get("username") || ""), String(form.get("password") || ""), role);
   if (!user) {
     await new Promise((r) => setTimeout(r, 600)); // slow down guessing
     return { error: `That name and password do not match. Ask ${adminFirst()} if you need a new password.` };

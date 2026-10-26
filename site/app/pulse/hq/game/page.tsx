@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // The weekly Speed Round for leadership: same game as the reps, with company-wide report hunts.
 export default async function Game() {
   requirePage("speed_round");
-  requireLeadEditor();
+  (await requireLeadEditor());
   const meta = await getMeta();
   return (
     <div className="wrap">

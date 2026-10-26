@@ -8,7 +8,7 @@ A word on safety. This route never touches your CRM at all; you're simply export
 
 ## What your exports need to hold
 
-Your CRM will call things by its own names, and that's fine. In our rules session we'll write down which of your columns means what, once, and the Pulse translates every upload the same way from then on.
+Your CRM will call things by its own names, and that's fine. Your Claude writes down which of your columns means what, once, and the Pulse translates every upload the same way from then on.
 
 **Export 1, all your jobs and leads.** One row per lead or job, dead leads included, with:
 
@@ -23,7 +23,7 @@ Your CRM will call things by its own names, and that's fine. In our rules sessio
 
 **Export 3, job costs (optional).** Every cost line on closed jobs: job number, what was paid and to whom, the amount, and the job's totals. Without it, the Job costing page stays off.
 
-If your CRM doesn't track one of these, tell me. Some are optional, and for the rest there's usually a field we can use instead.
+If your CRM doesn't track one of these, tell your Claude. Some are optional, and for the rest there's usually a field we can use instead.
 
 ## Name the files
 
@@ -44,4 +44,4 @@ As often as you want fresh numbers. Once a day, first thing in the morning, work
 
 ## Before the first upload
 
-In our rules session we'll fill in the translation file together (`connectors/csv/mapping.json`): which of your columns feeds each Pulse column, how your CRM writes dates, and what your CRM calls each stage. For example, if your CRM says "Sold" where the Pulse says "Approved", we write that down once. Then we'll do a practice run on one export, match the numbers against your CRM's own reports, and only then go live.
+Your Claude fills in the translation file for you (`connectors/csv/mapping.json`) from your first export's column names: which of your columns feeds each Pulse column, how your CRM writes dates, and what your CRM calls each stage. For example, if your CRM says "Sold" where the Pulse says "Approved", it writes that down once. Then you do a practice run on one export, match the numbers against your CRM's own reports, and only then go live.

@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Requests() {
   requirePage("requests");
-  requireLeadEditor();
+  (await requireLeadEditor());
   const [meta, reqs] = await Promise.all([getMeta(), listRequests()]);
   return (
     <div className="wrap">

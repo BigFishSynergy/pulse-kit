@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, { params }: { params: { token: strin
     const go = new URL(req.url); go.searchParams.set("go", "1");
     return preview(go.toString());
   }
-  const u = checkLink(params.token);
+  const u = await checkLink(params.token);
   if (!u) {
     await new Promise((r) => setTimeout(r, 400));
     return NextResponse.redirect(new URL("/pulse?link=old", req.url), 303);

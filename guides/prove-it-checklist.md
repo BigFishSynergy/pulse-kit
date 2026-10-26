@@ -4,7 +4,7 @@
 
 A dashboard is only worth something when the team believes it. So before your Pulse goes live, we prove every number against your CRM's own reports, for the same dates, until they agree exactly. To the record and to the penny.
 
-Here's how it works. We pick one finished period (the last full quarter is ideal, plus last month). For each line, you pull the number from your CRM's own report, I pull it from the Pulse rules, and we compare. When they match, we check the box. When they don't, we find the exact records that differ and we fix the rule or the setting, never the number. Most differences turn out to be a dead reason spelled two ways or a work type nobody remembered.
+Here's how it works. We pick one finished period (the last full quarter is ideal, plus last month). For each line, you pull the number from your CRM's own report, your Claude pulls it from the Pulse rules (the prove-it button), and you compare. When they match, we check the box. When they don't, we find the exact records that differ and we fix the rule or the setting, never the number. Most differences turn out to be a dead reason spelled two ways or a work type nobody remembered.
 
 ## The period we're proving
 
@@ -51,7 +51,7 @@ We never adjust a number to make it match. If a difference turns out to be a rea
 
 ## Record the known-good numbers
 
-When every box is checked, we write the matched numbers into section 10 of your rulebook, with the period and when the data was pulled. From then on, any change to the rules or the code has to reproduce them. Later data will drift a little as records change in your CRM, and that's expected; the known-good numbers are about the counting, not the data.
+When every box is checked, your Claude writes the matched numbers into section 10 of your rulebook, with the period and when the data was pulled. From then on, any change to the rules or the code has to reproduce them. Later data will drift a little as records change in your CRM, and that's expected; the known-good numbers are about the counting, not the data.
 
 Recorded on: ______________ by ______________
 

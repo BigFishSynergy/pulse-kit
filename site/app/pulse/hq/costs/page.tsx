@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 // Job costing and GP. A section of the Pulse until Oct 14 2026 (/hq/pulse#costs forwards here).
 export default async function CostsPage({ searchParams }: { searchParams: { week?: string } }) {
   requirePage("costs");
-  requireLead();
+  (await requireLead());
   const week = await pickWeek(searchParams.week);
   const [meta, s] = await Promise.all([getMeta(week), getLeadership(week)]);
   return (

@@ -2,9 +2,9 @@
 
 *Prepared by Benny Fisher | Visionary Navigator | bennyfisher.com*
 
-This is the part where your AccuLynx numbers start flowing into your own Pulse, on their own, every half hour of the workday. It takes about an hour, and most of that is building three reports. I'll be with you for it, so treat this as the map we're both looking at.
+This is the part where your AccuLynx numbers start flowing into your own Pulse, on their own, every half hour of the workday. It takes about an hour, and most of that is building three reports. Your Claude, with the Pulse setup skill, walks you through every click, so treat this as the map you're both looking at.
 
-A quick word on safety before we start. Everything here only reads from AccuLynx. Nothing ever changes a job, a contact or a number in your account. Your API key goes in one place only, a locked secret inside your own GitHub, and you're the one who types it in. Please never email it, text it or paste it into a chat, not even to me. And the reports leave out customer names, phone numbers, emails and street addresses entirely. Your Pulse only ever needs the job number, the zip code and the numbers.
+A quick word on safety before we start. Everything here only reads from AccuLynx. Nothing ever changes a job, a contact or a number in your account. Your API key goes in one place only, a locked secret inside your own GitHub, and you're the one who types it in. Please never email it, text it or paste it into a chat, not even to Claude. And the reports leave out customer names, phone numbers, emails and street addresses entirely. Your Pulse only ever needs the job number, the zip code and the numbers.
 
 ## What you'll need
 
@@ -74,7 +74,7 @@ A good gut check: run each report once by hand and look at it. If Report 1 has y
 
 ## Step 4. Your GitHub account, and where the key lives
 
-If you don't have GitHub yet, go to github.com, sign up with your work email, and create an organization for your company (the free plan is fine). I'll set up your private Pulse repository inside it with you.
+If you don't have GitHub yet, go to github.com, sign up with your work email, and create an organization for your company (the free plan is fine). Then make your private copy of the Pulse Kit inside it (your Claude shows you how).
 
 Then, in your Pulse repository on github.com:
 
@@ -96,4 +96,4 @@ Actions, **pull-acculynx**, Run workflow. A green check means your data landed. 
 
 From here it runs itself. If a pull ever fails, the last good numbers stay in place, so your team is never staring at a blank screen.
 
-That's the plumbing. The meaningful part comes next, when we sit down together and decide exactly how your company counts its numbers.
+That's the plumbing. The meaningful part comes next: your Claude drafts your rules from your own data and asks you a few plain questions about how your company counts its numbers.

@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 // Leadership opens any CSR's screen, exactly as that CSR sees it.
 export default async function CsrForLead({ params }: { params: { slug: string } }) {
-  requireLead();
+  (await requireLead());
   const [meta, c] = await Promise.all([getMeta(), getCsr(params.slug)]);
   if (!c) notFound();
   return (

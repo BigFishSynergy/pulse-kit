@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 // Sections of the Pulse until Oct 14 2026.
 export default async function MarketingPage({ searchParams }: { searchParams: { week?: string } }) {
   requirePage("marketing");
-  requireLead();
+  (await requireLead());
   const week = await pickWeek(searchParams.week);
   const [meta, s] = await Promise.all([getMeta(week), getLeadership(week)]);
   return (

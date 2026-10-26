@@ -10,7 +10,7 @@ const noAsk = (role: string) => role === "csr" || (role === "rep" && process.env
 
 export async function GET(req: NextRequest) {
   if (!pageOn("ask_claude")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (!s) return NextResponse.json({ error: "Please log in again." }, { status: 401 });
   if (s.view) return NextResponse.json({ chats: [] });
   const id = req.nextUrl.searchParams.get("id");
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   if (!pageOn("ask_claude")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (s?.view) return NextResponse.json({ error: VIEW_ONLY }, { status: 403 });
   if (!s) return NextResponse.json({ error: "Please log in again." }, { status: 401 });
   if (noAsk(s.role)) return NextResponse.json({ error: "Ask Claude is not switched on for the sales team yet." }, { status: 403 });
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   if (!pageOn("ask_claude")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (!s) return NextResponse.json({ error: "Please log in again." }, { status: 401 });
   const ok = await deleteChat(s.u, req.nextUrl.searchParams.get("id") ?? "");
   return ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: "Could not delete that chat." }, { status: 400 });

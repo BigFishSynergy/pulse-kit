@@ -26,7 +26,7 @@ const STATUSES: Status[] = ["new", "planned", "done", "not_now"];
 
 export async function POST(req: NextRequest) {
   if (!pageOn("requests")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (s?.view) return NextResponse.json({ error: VIEW_ONLY }, { status: 403 });
   if (!s) return NextResponse.json({ error: "Please log in again." }, { status: 401 });
   const b = await req.json().catch(() => ({}));
@@ -47,14 +47,14 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   if (!pageOn("requests")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (!s || s.role !== "lead") return NextResponse.json({ error: "Not allowed." }, { status: 403 });
   return NextResponse.json({ requests: await listRequests() });
 }
 
 export async function PATCH(req: NextRequest) {
   if (!pageOn("requests")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (s?.view) return NextResponse.json({ error: VIEW_ONLY }, { status: 403 });
   if (!s || s.role !== "lead") return NextResponse.json({ error: "Not allowed." }, { status: 403 });
   const b = await req.json().catch(() => ({}));

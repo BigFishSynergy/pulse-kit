@@ -4,9 +4,9 @@
 
 This is the conversation that makes your Pulse yours. Every number on it, and every answer Claude gives about your business, comes from the decisions on these pages. Two people can look at the same CRM and get two different close rates, simply because they count differently. Once we write your way down, everyone gets the same answer every time, and it matches your CRM to the record and to the penny.
 
-We'll go through it together. For each one you'll see what the starting rules do (these come from a roofing company whose numbers were matched to their CRM to the penny, so they're a strong default), and room for your answer. "Keep it" is a perfectly good answer. Where you'd count it differently, we change the rule.
+You don't have to fill this in from scratch. Your Claude drafts every answer from your own CRM data first (the start-rules button), then asks you to confirm them one at a time. This worksheet is the full list, for when you want the detail. For each one you'll see what the starting rules do (these come from a roofing company whose numbers were matched to their CRM to the penny, so they're a strong default), and room for your answer. "Keep it" is a perfectly good answer. Where you'd count it differently, we change the rule.
 
-Bring your CRM login. Half of this goes faster when we can look at a real record together.
+Keep your CRM open. Some answers go faster when you can look at a real record.
 
 ## 1. Who's on the team
 
@@ -183,4 +183,4 @@ Your answers:
 
 ## What happens next
 
-I'll put every answer into your rules, run the check until it's clean, and then we prove it: we match each number against your CRM's own reports until they agree exactly. That's the Prove It checklist, and it's the moment your team starts trusting the Pulse.
+Your Claude puts every answer into your rules, runs the check until it's clean, and then you prove it together: we match each number against your CRM's own reports until they agree exactly. That's the Prove It checklist, and it's the moment your team starts trusting the Pulse.

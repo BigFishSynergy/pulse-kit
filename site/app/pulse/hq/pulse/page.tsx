@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 // The leadership Pulse, for the latest numbers or any saved week. Clean is the short version; Everything adds the
 // scorecard, trends and a link to each deeper page (Map, Team, Production, Job costing, Marketing).
 export default async function Pulse({ searchParams }: { searchParams: { week?: string } }) {
-  const me = requireLead();
+  const me = (await requireLead());
   const look = getLook();
   const weeks = await getWeeks();
   const week = searchParams.week && WEEK.test(searchParams.week) && weeks.some((w) => w.week_start === searchParams.week) && searchParams.week !== weeks[0]?.week_start ? searchParams.week : undefined;

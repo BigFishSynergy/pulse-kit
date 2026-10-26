@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   if (!pageOn("scorecard")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (s?.view) return NextResponse.json({ error: VIEW_ONLY }, { status: 403 });
   if (!s || s.role !== "lead") return NextResponse.json({ error: "Not allowed." }, { status: 403 });
   const b = await req.json().catch(() => ({}));

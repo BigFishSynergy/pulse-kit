@@ -31,7 +31,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   if (!pageOn("slack")) return new Response("Not found", { status: 404 });
-  if (!isAdmin(getSession())) return NextResponse.json({ error: "Not allowed." }, { status: 403 });
+  if (!isAdmin((await getSession()))) return NextResponse.json({ error: "Not allowed." }, { status: 403 });
   if (!slackReady()) return NextResponse.json({ error: WHY.not_configured }, { status: 503 });
   const b = (await req.json().catch(() => ({}))) as { action?: string; to?: string; text?: string; day?: string; on?: boolean };
   if (b.action?.startsWith("daily.")) {

@@ -1,0 +1,45 @@
+name: start-rules
+
+# Setup helper. Drafts this company's rules from their own CRM data (scripts/rules_from_data.py): the sales roster,
+# former reps, dead reasons, work types, the main trade and the job number prefix, with the Pulse Kit defaults. Commits
+# rules/settings.json, RULES.md, MARKETING_PHILOSOPHY.md and STARTING-RULES.md (the owner's questions) to main, then
+# check-rules runs on its own. Run it once, right after the first pull.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type REPLACE to replace the current rules with a fresh draft"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Confirm
+        run: '[ "${{ inputs.confirm }}" = "REPLACE" ] || { echo "::error::Type REPLACE to run this. Nothing changed."; exit 1; }'
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          path: databranch
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet pandas
+      - name: Draft the rules from the data
+        run: |
+          python scripts/rules_from_data.py databranch/data/job_export_raw_latest.csv
+          python scripts/check_rules.py databranch/data/job_export_raw_latest.csv
+          cat rules/STARTING-RULES.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Save the draft
+        run: |
+          git config user.name "pulse-setup-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add rules
+          git commit -qm "Start the rules from our CRM data (start-rules)" || echo "No changes"
+          git push -q

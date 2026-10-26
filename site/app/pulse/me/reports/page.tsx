@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // A rep's own report builder. The API only ever sends this rep's records.
 export default async function MyReports() {
   requirePage("reports");
-  const s = requireRep();
+  const s = (await requireRep());
   const meta = await getMeta();
   return (
     <div className="wrap">

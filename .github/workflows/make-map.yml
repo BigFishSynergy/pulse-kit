@@ -1,0 +1,35 @@
+name: make-map
+
+# Setup helper. Builds the map files from site/content/zips.csv (zip,town,region; region OUT for zips the company does
+# not serve) using the U.S. Census, and commits site/content/zips.json and site/public/pulse/zips.geojson. With the
+# repo secret CENSUS_API_KEY it also adds homes, home values, home age and income by zip. Upload or edit zips.csv on
+# github.com, then run this.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build the map files
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+        run: |
+          [ -f site/content/zips.csv ] || { echo "::error::Add site/content/zips.csv first (columns zip,town,region)."; exit 1; }
+          if [ -n "$CENSUS_API_KEY" ]; then python scripts/make_zip_files.py --zips site/content/zips.csv --market; else python scripts/make_zip_files.py --zips site/content/zips.csv; fi
+      - name: Save them
+        run: |
+          git config user.name "pulse-setup-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add site/content site/public/pulse/zips.geojson
+          git commit -qm "Map files from site/content/zips.csv (make-map)" || echo "No changes"
+          git push -q

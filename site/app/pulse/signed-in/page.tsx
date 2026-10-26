@@ -9,11 +9,11 @@ export const dynamic = "force-dynamic";
 
 // Where a sign-in link lands the first time it is used on a phone or computer (app/pulse/k/[token]/route.ts). It shows the
 // person their own link, because the page they land on next has no key in it and only works where they are already signed in.
-export default function SignedIn() {
-  const s = getSession();
+export default async function SignedIn() {
+  const s = (await getSession());
   if (!s) redirect("/pulse");
   const home = `${homeOf(s.role)}?welcome=1`;
-  const token = linkOnDevice(s);
+  const token = await linkOnDevice(s);
   if (!token) redirect(home);
   return (
     <div className="wrap">

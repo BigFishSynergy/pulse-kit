@@ -28,13 +28,13 @@ const THEME = "try{var r=document.getElementById('rr'),t=localStorage.getItem('r
 const B = CONFIG.brand.colors;
 const BRAND = { "--mark": `url("${CONFIG.brand.mark_on_dark}")`, "--head": B.primary, "--red": B.primary, "--head-ink": B.primary_ink, "--yellow": B.accent, "--accent-ink": B.accent_ink } as React.CSSProperties;
 
-export default function PulseLayout({ children }: { children: React.ReactNode }) {
+export default async function PulseLayout({ children }: { children: React.ReactNode }) {
   return (
     <div id="rr" className={`rr ${display.variable} ${text.variable}`} data-simple="1" style={BRAND} suppressHydrationWarning>
       <script dangerouslySetInnerHTML={{ __html: THEME }} />
       {children}
-      {pageOn("soundtrack") ? <Soundtrack signedIn={!!getSession()} /> : null}
-      {getSession() ? <ActivityBeacon /> : null}
+      {pageOn("soundtrack") ? <Soundtrack signedIn={!!(await getSession())} /> : null}
+      {(await getSession()) ? <ActivityBeacon /> : null}
     </div>
   );
 }

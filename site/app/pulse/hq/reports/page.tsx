@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Reports() {
   requirePage("reports");
-  const me = requireLead();
+  const me = (await requireLead());
   const meta = await getMeta();
   return (
     <div className="wrap">

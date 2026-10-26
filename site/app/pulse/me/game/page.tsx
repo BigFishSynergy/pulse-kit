@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // The weekly Speed Round for the sales side: reps and CSRs.
 export default async function MyGame() {
   requirePage("speed_round");
-  const s = requireSalesSide();
+  const s = (await requireSalesSide());
   const meta = await getMeta();
   return (
     <div className="wrap">

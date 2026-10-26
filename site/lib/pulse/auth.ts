@@ -3,13 +3,14 @@ import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, 
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { adminFirst, CONFIG } from "./config";
+import { allUsers } from "./userstore";
 
 // Pulse logins. Three roles that never mix:
 //   rep   one sales rep, sees only their own screen plus the team leaderboard tops
 //   csr   one CSR (appointment setter), sees only their own CSR screen plus the sales team's tops and totals
 //   lead  the leadership team: the full Pulse
-// Users live in the PULSE_USERS env var (JSON list, scrypt password hashes). Manage them with
-// `node users.mjs` (in site/). Sessions are HMAC-signed cookies scoped to /pulse: 90 days from the last visit (365 from a
+// Logins live in the company's private Blob store (lib/pulse/userstore.ts), managed by the admin on the People page
+// (/pulse/hq/people); the first one is made on /pulse/setup. Passwords are scrypt hashes only. Sessions are HMAC-signed cookies scoped to /pulse: 90 days from the last visit (365 from a
 // sign-in link), renewed as people use the site (refreshSession), so a phone or computer that signed in once stays signed in.
 
 export type Role = "rep" | "lead" | "csr";
@@ -39,14 +40,7 @@ function secret(): string {
   return s;
 }
 
-export function users(): PulseUser[] {
-  try {
-    const list = JSON.parse(process.env.PULSE_USERS || "[]");
-    return Array.isArray(list) ? list : [];
-  } catch {
-    return [];
-  }
-}
+export const users = (): Promise<PulseUser[]> => allUsers();
 
 const b64 = (b: Buffer | string) => Buffer.from(b).toString("base64url");
 const sign = (body: string) => createHmac("sha256", secret()).update(body).digest("base64url");
@@ -64,19 +58,19 @@ export function verifyPassword(password: string, stored: string): boolean {
 
 /** Check a login on one side of the site. A rep login never works on the leadership page and the other way around.
  * The sales login page (role "rep") also takes CSR logins: both are the sales side. */
-export function checkLogin(username: string, password: string, role: Role): PulseUser | null {
+export async function checkLogin(username: string, password: string, role: Role): Promise<PulseUser | null> {
   const fits = (r: Role) => r === role || (role === "rep" && r === "csr");
-  const u = users().find((x) => x.u.toLowerCase() === username.trim().toLowerCase() && fits(x.role));
+  const u = (await users()).find((x) => x.u.toLowerCase() === username.trim().toLowerCase() && fits(x.role));
   // Run scrypt even for unknown names so timing does not reveal who has an account.
   const ok = verifyPassword(password, u?.hash ?? "scrypt:AAAAAAAAAAAAAAAAAAAAAA:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
   return u && ok ? u : null;
 }
 
 /** A personal sign-in link: /pulse/k/<token>. Only the token's hash is stored, in PULSE_USERS. */
-export function checkLink(token: string): PulseUser | null {
+export async function checkLink(token: string): Promise<PulseUser | null> {
   if (!/^[A-Za-z0-9_-]{32,64}$/.test(token)) return null;
   const h = sha(token);
-  const u = users().find((x) => x.key && x.key.length === h.length && timingSafeEqual(Buffer.from(x.key), Buffer.from(h)));
+  const u = (await users()).find((x) => x.key && x.key.length === h.length && timingSafeEqual(Buffer.from(x.key), Buffer.from(h)));
   return u && !expired(u) ? u : null;
 }
 
@@ -92,8 +86,8 @@ function writeSession(u: PulseUser, exp: number) {
 
 /** Push a signed-in session out to 90 days from now. Never shortens one (a sign-in link gives a year), never runs past a
  * guest link's end, and rewrites the cookie at most about once a day. Route handlers only (pages cannot set cookies). */
-export function refreshSession() {
-  const s = readSession();
+export async function refreshSession() {
+  const s = await readSession();
   if (!s) return;
   let exp = Date.now() + KEEP_DAYS * 864e5;
   if (s.user.expires) exp = Math.min(exp, Date.parse(s.user.expires));
@@ -105,14 +99,14 @@ export function endSession() {
   cookies().set(LINK, "", { httpOnly: true, path: PATH, maxAge: 0 });
 }
 
-export function getSession(): Session | null {
-  const s = readSession();
+export async function getSession(): Promise<Session | null> {
+  const s = await readSession();
   if (!s) return null;
   const u = s.user;
   return { u: u.u, name: u.name, role: u.role, rep: u.rep, csr: u.csr, view: !!u.view || u.u === "guest" };
 }
 
-function readSession(): { user: PulseUser; exp: number } | null {
+async function readSession(): Promise<{ user: PulseUser; exp: number } | null> {
   const raw = cookies().get(COOKIE)?.value;
   if (!raw) return null;
   const [body, mac] = raw.split(".");
@@ -128,7 +122,7 @@ function readSession(): { user: PulseUser; exp: number } | null {
   }
   if (!p.exp || p.exp < Date.now()) return null;
   // The user must still exist, with the same role and password, for the session to count.
-  const u = users().find((x) => x.u === p.u && x.role === p.r);
+  const u = (await users()).find((x) => x.u === p.u && x.role === p.r);
   if (!u || passwordVersion(u) !== p.v || expired(u)) return null;
   return { user: u, exp: p.exp };
 }
@@ -147,7 +141,7 @@ export function sealLink(token: string): string {
 }
 
 /** The link token inside a sealed copy, if it is still a working link for this person. */
-export function openLink(sealed: string | null | undefined, s: Session): string | null {
+export async function openLink(sealed: string | null | undefined, s: Session): Promise<string | null> {
   if (!sealed) return null;
   let token: string;
   try {
@@ -159,7 +153,7 @@ export function openLink(sealed: string | null | undefined, s: Session): string 
   } catch {
     return null;
   }
-  const u = checkLink(token);
+  const u = await checkLink(token);
   return u && u.u === s.u && u.role === s.role ? token : null;
 }
 
@@ -167,7 +161,7 @@ export function openLink(sealed: string | null | undefined, s: Session): string 
 export function keepLinkOnDevice(sealed: string) {
   cookies().set(LINK, sealed, { ...cookieBase(), maxAge: YEAR });
 }
-export const linkOnDevice = (s: Session) => openLink(cookies().get(LINK)?.value, s);
+export const linkOnDevice = (s: Session): Promise<string | null> => openLink(cookies().get(LINK)?.value, s);
 
 /** The "You're signed in" page shows once per person on each device. True the first time; marks it shown. */
 export function firstLinkHere(u: PulseUser): boolean {
@@ -180,8 +174,8 @@ export function firstLinkHere(u: PulseUser): boolean {
 export const homeOf = (role: Role) => (role === "lead" ? "/pulse/hq/pulse" : role === "csr" ? "/pulse/csr" : "/pulse/me");
 
 /** Sales side pages. Leadership can open any rep's screen from their own pages instead. */
-export function requireRep(): Session & { rep: string } {
-  const s = getSession();
+export async function requireRep(): Promise<Session & { rep: string }> {
+  const s = await getSession();
   if (!s) redirect("/pulse");
   if (s.role !== "rep") redirect(homeOf(s.role));
   if (!s.rep) redirect("/pulse");
@@ -189,8 +183,8 @@ export function requireRep(): Session & { rep: string } {
 }
 
 /** A CSR's own screen. Reps and leaders go to their own home page. */
-export function requireCsr(): Session & { csr: string } {
-  const s = getSession();
+export async function requireCsr(): Promise<Session & { csr: string }> {
+  const s = await getSession();
   if (!s) redirect("/pulse");
   if (s.role !== "csr") redirect(homeOf(s.role));
   if (!s.csr) redirect("/pulse");
@@ -198,23 +192,23 @@ export function requireCsr(): Session & { csr: string } {
 }
 
 /** Sales side pages everyone on the sales side shares (the Speed Round): reps and CSRs. */
-export function requireSalesSide(): Session {
-  const s = getSession();
+export async function requireSalesSide(): Promise<Session> {
+  const s = await getSession();
   if (!s) redirect("/pulse");
   if (s.role === "lead") redirect("/pulse/hq/pulse");
   return s;
 }
 
 /** Leadership pages where people make changes or see the team's own activity. A view-only guest goes back to the Pulse. */
-export function requireLeadEditor(): Session {
-  const s = requireLead();
+export async function requireLeadEditor(): Promise<Session> {
+  const s = await requireLead();
   if (s.view) redirect("/pulse/hq/pulse");
   return s;
 }
 
 /** Leadership pages. A rep who guesses the address gets a plain 404, nothing that hints a page is there. */
-export function requireLead(): Session {
-  const s = getSession();
+export async function requireLead(): Promise<Session> {
+  const s = await getSession();
   if (!s) redirect("/pulse/hq");
   if (s.role !== "lead") notFound();
   return s;

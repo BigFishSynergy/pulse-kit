@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 // These were sections of the Pulse until Oct 14 2026 (/hq/pulse#cards and #meter forward here).
 export default async function TeamPage({ searchParams }: { searchParams: { week?: string } }) {
   requirePage("team");
-  requireLead();
+  (await requireLead());
   const week = await pickWeek(searchParams.week);
   const [meta, s, people] = await Promise.all([getMeta(week), getLeadership(week), getPeople(week)]);
   const coaching = meta ? await getCoaching(meta.week_start) : null;

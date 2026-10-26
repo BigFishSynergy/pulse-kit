@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 // Ask Claude for a rep: only their own numbers and the leaderboard tops, plus how to use their screen.
 export default async function MyAsk({ searchParams }: { searchParams: { q?: string } }) {
   requirePage("ask_claude");
-  requireRep();
+  (await requireRep());
   const meta = await getMeta();
   const on = process.env.PULSE_ASK_REPS === "on" && !!process.env.ANTHROPIC_API_KEY;
   return (

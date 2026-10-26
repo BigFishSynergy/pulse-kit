@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 // A rep's own screen. The server reads only this rep's file and this rep's coaching card.
 export default async function MyPulse() {
-  const s = requireRep();
+  const s = (await requireRep());
   const look = getLook();
   const [meta, rep] = await Promise.all([getMeta(), getRep(s.rep)]);
   const coaching = meta ? await getCoaching(meta.week_start) : null;

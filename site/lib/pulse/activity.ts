@@ -86,5 +86,5 @@ import { summarize as _summarize } from "./activity-summary";
 /** Summary for a date range, with everyone who has a login listed even if they never showed up. */
 export async function summaryBetween(from: string, to: string) {
   const logs = await logsBetween(from, to);
-  return _summarize(logs, users().map(({ u, name, role }) => ({ u, name, role })));
+  return _summarize(logs, (await users()).map(({ u, name, role }) => ({ u, name, role })));
 }

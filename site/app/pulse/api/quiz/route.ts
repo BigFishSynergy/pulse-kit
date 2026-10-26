@@ -17,7 +17,7 @@ async function boards(week: string, u: string) {
 
 export async function GET() {
   if (!pageOn("speed_round")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (!s) return NextResponse.json({ error: "Please log in again." }, { status: 401 });
   const week = quizWeek();
   const qs = await questionsFor(week, s);
@@ -31,7 +31,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   if (!pageOn("speed_round")) return new Response("Not found", { status: 404 });
-  const s = getSession();
+  const s = (await getSession());
   if (s?.view) return NextResponse.json({ error: VIEW_ONLY }, { status: 403 });
   if (!s) return NextResponse.json({ error: "Please log in again." }, { status: 401 });
   const b = await req.json().catch(() => ({}));
