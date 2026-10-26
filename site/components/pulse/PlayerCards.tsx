@@ -3,6 +3,7 @@ import SecHelp from "./SecHelp";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link";
 import { Win } from "./ui";
+import { faceSrc } from "@/lib/pulse/faces";
 import { dfmt, money, moneyK, n0, pct } from "@/lib/pulse/format";
 
 // Player cards: each rep's POWER number and six skill ratings over the last 90 days (40 to 99, team average 75), like the
@@ -35,7 +36,7 @@ export function SameDayMeter({ sd, base, power }: { sd: any; base?: number; powe
   );
 }
 
-function Card({ c, href, me, photo }: { c: any; href?: string; me?: boolean; photo?: number }) {
+function Card({ c, href, me, photo }: { c: any; href?: string; me?: boolean; photo?: number | string }) {
   const s = c.stats;
   const name = href ? <Link href={href}>{c.rep}</Link> : c.rep;
   return (
@@ -44,7 +45,7 @@ function Card({ c, href, me, photo }: { c: any; href?: string; me?: boolean; pho
         <span className="rank num">#{c.rank}</span>
         <h3>{photo ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="pface" src={`/pulse/api/photo/${c.slug}?v=${photo}`} alt="" />
+          <img className="pface face" src={faceSrc(c.slug, photo) ?? ""} alt="" />
         ) : null}{name}</h3>
         <div className="power"><span className="num">{c.power}</span><span className="label">Power</span></div>
       </header>
@@ -177,7 +178,7 @@ function RapidBoard({ b, href, slugs }: { b: any; href: (slug: string) => string
 }
 
 /** Leadership: every rep's card, best power first, who is still earning one, and the record book. */
-export default function PlayerCards({ cards, week, photos = {} }: { cards: any; week?: string; photos?: Record<string, number> }) {
+export default function PlayerCards({ cards, week, photos = {} }: { cards: any; week?: string; photos?: Record<string, number | string> }) {
   const W = cards?.windows?.["90"];
   if (!W) return null;
   const href = (slug: string) => `/pulse/hq/rep/${slug}${week ? `?week=${week}` : ""}`;

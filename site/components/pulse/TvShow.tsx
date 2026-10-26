@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CO, CONFIG } from "@/lib/pulse/config";
 import { moneyK, n0, pct } from "@/lib/pulse/format";
+import { faceSrc } from "@/lib/pulse/faces";
 
 // The office TV: one big slide at a time, a thin bar showing how long until the next, the data time in the corner.
 // It reloads itself every 10 minutes for fresh numbers. Built for reading across a room: few numbers, very large.
@@ -20,7 +21,7 @@ function Cards({ cards, tv }: { cards: any[]; tv: string }) {
         <span className="tv-card-rank">#{c.rank}</span>
         {c.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="tv-face" src={`/pulse/api/photo/${c.slug}?v=${c.photo}&tv=${encodeURIComponent(tv)}`} alt="" />
+          <img className="tv-face face" src={faceSrc(c.slug, c.photo, tv) ?? ""} alt="" />
         ) : <span className="tv-face none">{initials(c.name)}</span>}
         <div className="tv-card-power"><span>{c.power}</span><small>POWER</small></div>
       </div>

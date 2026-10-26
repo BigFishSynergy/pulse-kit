@@ -1365,3 +1365,14 @@ html:has(.rr .tv.dark), body:has(.rr .tv.dark) { background: #0B0B0B; }
 .rr .myphoto img, .rr .myphoto .photo-none { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; }
 .rr .myphoto label.btn { cursor: pointer; }
 @media (max-width: 600px) { .rr .myphoto { grid-template-columns: auto 1fr; } .rr .myphoto label.btn { grid-column: 1 / -1; text-align: center; } }
+/* faces: photos (black and white) and avatars sit on the same background, so the board reads as one set */
+.rr { --face-bg: #2E4A6B; }
+.rr img.face, .rr .pb-face, .rr .tv-face { background: var(--face-bg); }
+.rr .avatar-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; margin-top: 10px; }
+.rr .avatar-pick button { padding: 0; border: 2px solid transparent; background: none; cursor: pointer; border-radius: 50%; }
+.rr .avatar-pick button.on, .rr .avatar-pick button:hover { border-color: var(--red); }
+.rr .avatar-pick img { width: 100%; aspect-ratio: 1; border-radius: 50%; background: var(--face-bg); display: block; }
+.rr .avatar-panel { border: 1px solid var(--line); background: var(--card); padding: 12px; margin-top: 12px; }
+.rr .myphoto-wrap { display: flex; flex-direction: column; gap: 10px; }
+.rr .myphoto-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.rr .myphoto-btns label.btn { cursor: pointer; }

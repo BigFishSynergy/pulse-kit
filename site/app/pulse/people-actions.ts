@@ -164,3 +164,25 @@ export async function uploadMyPhoto(dataUrl: string): Promise<PeopleState> {
   revalidatePath(s!.role === "csr" ? "/pulse/csr" : "/pulse/me");
   return { done: "Looking good. Your photo is on your card now." };
 }
+
+/** The admin picks one of the 25 avatars for someone. */
+export async function pickAvatar(slug: string, name: string): Promise<PeopleState> {
+  try { await requireAdmin(); } catch (e) { return { error: (e as Error).message }; }
+  const { SLUG, chooseAvatar } = await import("@/lib/pulse/photos");
+  if (!SLUG.test(slug)) return { error: "No such person." };
+  try { await chooseAvatar(slug, name); } catch (e) { return { error: (e as Error).message }; }
+  revalidatePath("/pulse/hq/people");
+  return { done: "Avatar saved." };
+}
+
+/** A rep or CSR picks their own avatar instead of a photo. */
+export async function pickMyAvatar(name: string): Promise<PeopleState> {
+  const s = await getSession();
+  const slug = s && !s.view ? (s.role === "rep" ? s.rep : s.role === "csr" ? s.csr : undefined) : undefined;
+  if (!slug) return { error: "Sign in on your own screen to pick your avatar." };
+  const { SLUG, chooseAvatar } = await import("@/lib/pulse/photos");
+  if (!SLUG.test(slug)) return { error: "Your login isn't linked to a rep or CSR yet." };
+  try { await chooseAvatar(slug, name); } catch (e) { return { error: (e as Error).message }; }
+  revalidatePath(s!.role === "csr" ? "/pulse/csr" : "/pulse/me");
+  return { done: "Nice pick. It's on your card now." };
+}

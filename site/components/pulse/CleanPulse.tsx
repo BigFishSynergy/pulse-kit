@@ -8,6 +8,7 @@ import { MeterBadge } from "./HotCold";
 import { GoalChip, Seg, usePersist, Win } from "./ui";
 import { dfmt, goalClass, goalSay, money, moneyK, n0, n1, paceClass, pct, tidy, written } from "@/lib/pulse/format";
 import PowerBoard from "./PowerBoard";
+import { faceSrc } from "@/lib/pulse/faces";
 
 // The Clean look for leadership: the four numbers that matter, one trend, the team on one screen, and two ways to ask
 // for anything else (a report or Claude). Same snapshot as the Everything look; nothing here is counted differently.
@@ -83,7 +84,7 @@ function WeekBars({ trend }: { trend: any[] }) {
   );
 }
 
-export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first, photos = {} }: { s: any; coaching: any; repSlugs: Record<string, string>; canAsk: boolean; week: string; first: string; photos?: Record<string, number> }) {
+export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first, photos = {} }: { s: any; coaching: any; repSlugs: Record<string, string>; canAsk: boolean; week: string; first: string; photos?: Record<string, number | string> }) {
   const [per, setPer] = usePersist("cleanPer", "month", PER.map((p) => p[0]));
   const [q, setQ] = useState("");
   const b = s.board;
@@ -146,7 +147,7 @@ export default function CleanPulse({ s, coaching, repSlugs, canAsk, week, first,
       <section className="cl-panel">
         <div className="cl-panel-h"><span className="cl-k">Power rankings</span><Win>last 90 days</Win><span className="sub">Highest POWER first. POWER covers the last 90 days and is built from the six skills on each card (the tick on each bar is the team average). The line at the bottom is the last 30 days. Tap a card for that rep&apos;s screen.</span></div>
         <PowerBoard team={team} power={power} temp={temp} coming={coming} href={(rep) => (repSlugs[rep] ? q2(rep) : "#")}
-          photo={(rep) => (photos[repSlugs[rep]] ? `/pulse/api/photo/${repSlugs[rep]}?v=${photos[repSlugs[rep]]}` : null)} />
+          photo={(rep) => (repSlugs[rep] ? faceSrc(repSlugs[rep], photos[repSlugs[rep]]) : null)} />
       </section>
 
       <CsrTeam cc={s.csr_cards} />
