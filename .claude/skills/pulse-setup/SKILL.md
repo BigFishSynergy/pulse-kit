@@ -31,7 +31,7 @@ Check `SETUP-PROGRESS.md`, then pick up at the first step that isn't done.
 
 ### 1. Their own copy of the kit
 
-They need a GitHub account (github.com, free) and an organization for the company. Then a private copy of the kit in it. Whoever gave them the kit (usually Benny Fisher) shares it with them; the fastest path is the green **Use this template** button on the kit's page, choosing their organization and **Private**. Then:
+They need a GitHub account (github.com, free) and an organization for the company. Then a private copy of the kit in it. The kit is public at github.com/BigFishSynergy/pulse-kit, no invite needed: on that page they click the green **Use this template** button, then Create a new repository, choosing their organization and **Private**. Then:
 
 - Settings, Actions, General, Workflow permissions: **Read and write**, Save.
 - Settings, Secrets and variables, Actions, **Variables** tab: `CRM_CONNECTOR` = `acculynx`, or `csv` for any other CRM.
