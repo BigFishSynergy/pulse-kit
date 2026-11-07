@@ -9,4 +9,3 @@ rules/settings.json
 rules/RULES.md
 rules/MARKETING_PHILOSOPHY.md
 connectors/csv/mapping.json
-docs/LANDING-AND-UNLOCK.md

@@ -19,14 +19,14 @@ The steps below are the same walk-through, written out.
 | Who | Brings |
 |---|---|
 | The client's owner or admin | A GitHub account (an organization is best, free is fine), a Vercel account (Pro, $20 a month, because a business site needs it and the hourly notices need Pro's cron jobs), admin access to their CRM, and their Slack workspace if they want daily messages |
-| Benny | Access to the kit. Optional: leading the rules and the number matching with them |
+| Benny | The kit's link. Optional: leading the rules and the number matching with them |
 | Optional | An Anthropic API key in the client's own Claude Console (Ask Claude, Make a graphic, coaching cards, Speed Round), a Google account for a goals sheet, Windsor.ai for ad spend |
 
 **Security, always:** keys, tokens and passwords go only into GitHub secrets or Vercel environment variables, typed in by the person who owns that account. Never in email, chat, a text, or any file. Everything reads the CRM only; nothing ever writes to it. Customer names, phones, emails and addresses never get saved (the connectors drop them) and never show on the site (the build stops if one slips through).
 
 ## 1. Make the client's copy
 
-1. Benny gives the client's GitHub account read access to the kit (or sends them the kit link if it's public).
+1. Open the kit's page: github.com/BigFishSynergy/pulse-kit. Anyone can make a copy; no invite needed.
 2. On the kit's GitHub page, the client clicks **Use this template**, Create a new repository, picks their organization, names it `pulse`, picks **Private**, and creates it.
 
 3. In the client's repo: Settings, Actions, General, Workflow permissions: **Read and write**. Save.
